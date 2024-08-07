@@ -1,0 +1,9 @@
+.DS_STORE
+
+# for Rust builds
+/target
+
+# for React builds
+
+*/build
+*/node_modules
