@@ -3,8 +3,6 @@ use tower_http::services::{ServeDir, ServeFile};
 
 #[tokio::main]
 async fn main() {
-    //let cors = CorsLayer::new().allow_origin(Any);
-
     let app: Router = init_router(); 
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
@@ -13,9 +11,10 @@ async fn main() {
 }
 
 fn init_router() -> Router {
+    // We need to serve from the build directory itself so the relative paths are correct for 
+    // the React app files.
     Router::new().nest_service(
         "/", ServeDir::new("my-react-ts-app/build")
-       .not_found_service(ServeFile::new("index.html")),
-)
+       .not_found_service(ServeFile::new("index.html")),)
     
 }
