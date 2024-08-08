@@ -1,40 +1,18 @@
 import React from 'react';
-import logo from './logo.svg';
+import { Routes, Route } from 'react-router-dom';
 import './App.css';
-import BestTeamEverComponent from "./components/BestTeamEver";
-import UsersInTheSystemComponent from "./components/UesrList";
+import HomePage from './pages/HomePage';
+import UserListPage from './pages/UserListPage';
 
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-      WELCOME TO PROJECT X!
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://veeva.com"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn About X
-        </a>
-        <a
-          className="App-link"
-          href="/rando?start=1&end=100"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Generate a random number
-        </a>
-        <div>List of users: <UsersInTheSystemComponent/></div>
-        
-        <BestTeamEverComponent/>
-      </header>
-    </div>
+    <>
+      <Routes>
+        <Route path="/" Component={HomePage} />
+        <Route path="/user-list" Component={UserListPage} />
+      </Routes>
+    </>
   );
 }
 
