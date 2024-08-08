@@ -13,11 +13,19 @@ function App() {
         </p>
         <a
           className="App-link"
-          href="https://reactjs.org"
+          href="https://veeva.com"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Learn About X
+        </a>
+        <a
+          className="App-link"
+          href="/rando?start=1&end=100"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Generate a random number
         </a>
       </header>
     </div>
