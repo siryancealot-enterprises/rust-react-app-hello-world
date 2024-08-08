@@ -1,6 +1,9 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import BestTeamEverComponent from "./components/BestTeamEver";
+import UsersInTheSystemComponent from "./components/UesrList";
+
 
 function App() {
   return (
@@ -27,6 +30,9 @@ function App() {
         >
           Generate a random number
         </a>
+        <div>List of users: <UsersInTheSystemComponent/></div>
+        
+        <BestTeamEverComponent/>
       </header>
     </div>
   );
