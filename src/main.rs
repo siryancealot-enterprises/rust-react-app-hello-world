@@ -1,7 +1,8 @@
-use axum::{extract::Query, response::Html, routing::get, Json, Router};
+use axum::{extract::Query, response::Html, routing::get, Router};
+use serde::Deserialize;
 use tower_http::services::{ServeDir, ServeFile};
 use rand::{thread_rng, Rng};
-use serde::{Deserialize, Serialize};
+mod api;
 
 
 #[tokio::main]
@@ -26,7 +27,7 @@ fn init_router() -> Router {
         .route("/rando", get(random_number_handler))
         // Route to a random static html file
         .nest_service( "/other-index", ServeFile::new("index2.html"))
-        .route( "/api/users", get(get_users))
+        .route( "/api/users", get(api::methods::get_users))
 }
 
 
@@ -43,29 +44,4 @@ async fn random_number_handler(Query(range): Query<RangeParameters>) -> Html<Str
 
     // Send response in html format.
     Html(format!("<h1>Random Number: {}</h1></br><a href='/'>Go Back</a>", random_number))
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct User {
-    id: i32,
-    name: String,
-    email: String,
-    username: String
-}
-
-async fn get_users() -> Json<Vec<User>> {
-    
-    // Some JSON input data as a &str. Maybe this comes from the user.
-     let user = User {
-         id: 43,
-         name: "Kobe Bryant".to_owned(),
-         email: "kobe@lakers.com".to_owned(),
-         username: "kobe_bryant".to_owned()
-     };
-
-    let mut v: Vec<User> = Vec::new();
-    v.push(user);
-
-    Json(v)    
-    
 }
