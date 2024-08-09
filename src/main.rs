@@ -1,18 +1,38 @@
+
+
 use axum::{extract::Query, response::Html, routing::get, Router};
 use serde::Deserialize;
+use sqlx::postgres::PgPoolOptions;
 use tower_http::services::{ServeDir, ServeFile};
 use rand::{thread_rng, Rng};
 mod api;
 
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), sqlx::Error> {
+
+    let pool = PgPoolOptions::new() 
+        .max_connections(5)
+        .connect("postgresql://postgres:lakers@localhost:5432/test_react_app_db")
+        .await?;
+
+    let row: (i64,) = sqlx::query_as("SELECT $1")
+    .bind(150_i64)
+    .fetch_one(&pool)
+    .await?;
+
+    println!("DB connection active: {:?}", row.0 > 0);
+
+
     let app: Router = init_router(); 
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
     println!("listening on {}", listener.local_addr().unwrap() );
     axum::serve(listener, app).await.unwrap();
+   
+    Ok(())
 }
+
 
 fn init_router() -> Router {
     // We need to serve from the build directory itself so the relative paths are correct for 
