@@ -6,11 +6,11 @@ const FirstComponent: React.FC<{}> = () => {
   return (
     <div>
         <h1>Los Angeles Lakers!</h1>
-        <p>16 NBA Championships</p>
-        <p>10 Hall of Famers</p>
-        <p>5 top ten all time</p>
-        <p>NUFF SAID!</p>
-        <a href="/">Go Back</a>
+        <ul>
+          <li>16 NBA Championships</li>
+          <li>26 Hall of Famers</li>
+          <li>5 top ten all time</li>
+        </ul>
     </div>
   );
 };

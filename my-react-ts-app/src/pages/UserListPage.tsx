@@ -7,11 +7,11 @@ const UserListPage = () => {
 
     return <div className="App">
         <header className="App-header">
+            <div><BestTeamEver /></div>
+            <div>List of users: <UsersInTheSystemComponent/></div>
             <Link to={`/`} >
                 <button>Go to home</button>
             </Link>
-            <div><BestTeamEver /></div>
-            <div>List of users: <UsersInTheSystemComponent/></div>
         </header>
     </div>
 
