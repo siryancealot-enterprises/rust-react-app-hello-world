@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 interface Player {
-  id: number;
+  number: number;
   name: string;
   email: string;
   username: string;
@@ -54,8 +54,9 @@ function PlayerList() {
   return (
     <ul>
       {players?.map((player) => (
-      <li key={player.id}>
+      <li key={player.number}>
           Name: {player.name}, 
+          Number: {player.number},
           Email: {player.email}, 
           Username: {player.username}
       </li>
