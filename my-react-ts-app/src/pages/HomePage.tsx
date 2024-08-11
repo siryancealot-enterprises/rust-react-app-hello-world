@@ -8,8 +8,8 @@ const HomePage = () => {
       <header className="App-header">
        WELCOME TO PROJECT X!
         <img src={logo} className="App-logo" alt="logo" />
-        <Link to={`user-list`} className='App-Link' >
-            <button>Go to List of Users page</button>
+        <Link to={`/players`} className='App-Link' >
+            <button>Go to List of Players page</button>
         </Link> 
         <Link to={`/rando?start=1&end=1000`} target="_blank" >
             <button>Generate a random number, eleswhere</button>

@@ -1,14 +1,14 @@
 import React from 'react'
 import { Link } from "react-router-dom";
-import UsersInTheSystemComponent from "../components/UesrList";
+import PlayerListComponent from "../components/PlayerList";
 import BestTeamEver from "../components/BestTeamEver";
 
-const UserListPage = () => {
+const PlayerListPage = () => {
 
     return <div className="App">
         <header className="App-header">
             <div><BestTeamEver /></div>
-            <div>List of users: <UsersInTheSystemComponent/></div>
+            <div>List of players: <PlayerListComponent/></div>
             <Link to={`/`} >
                 <button>Go to home</button>
             </Link>
@@ -17,4 +17,4 @@ const UserListPage = () => {
 
 }
 
-export default UserListPage
+export default PlayerListPage

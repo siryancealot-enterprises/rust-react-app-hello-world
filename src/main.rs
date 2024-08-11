@@ -1,36 +1,31 @@
 
-
+use core::panic;
 use axum::{extract::Query, response::Html, routing::get, Router};
 use serde::Deserialize;
-use sqlx::postgres::PgPoolOptions;
 use tower_http::services::{ServeDir, ServeFile};
 use rand::{thread_rng, Rng};
+use dotenv::dotenv;
+
+mod db;
 mod api;
 
 
 #[tokio::main]
-async fn main() -> Result<(), sqlx::Error> {
+async fn main()  {
 
-    let pool = PgPoolOptions::new() 
-        .max_connections(5)
-        .connect("postgresql://postgres:lakers@localhost:5432/test_react_app_db")
-        .await?;
+    // Load environment variables from .env (at project root... for now)
+    dotenv().ok(); 
 
-    let row: (i64,) = sqlx::query_as("SELECT $1")
-    .bind(150_i64)
-    .fetch_one(&pool)
-    .await?;
 
-    println!("DB connection active: {:?}", row.0 > 0);
-
+    if db::db_utils::init_db_conn_pool().await.is_err() {
+        panic!("PANIC: DB UNHEALTHY, check logs")
+    }
 
     let app: Router = init_router(); 
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await.unwrap();
-    println!("listening on {}", listener.local_addr().unwrap() );
+    println!("App server listening on: {}", listener.local_addr().unwrap() );
     axum::serve(listener, app).await.unwrap();
-   
-    Ok(())
 }
 
 
@@ -47,7 +42,7 @@ fn init_router() -> Router {
         .route("/rando", get(random_number_handler))
         // Route to a random static html file
         .nest_service( "/other-index", ServeFile::new("index2.html"))
-        .route( "/api/users", get(api::methods::get_users))
+        .route( "/api/players", get(api::methods::get_players))
 }
 
 

@@ -1,36 +1,27 @@
+// the beauty of this is ::sqlx will analzye at build time if your sql statements below match up with 
+// your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
+// run the analysis and then report in "problems/compile errors" in your IDE that you need to address.
+
+use crate::db::db_utils;
 use axum::Json;
 use serde::{Serialize, Deserialize};
 
-
 #[derive(Serialize, Deserialize, Debug)]
-pub struct User {
-    id: i32,
+pub struct Player {
+    number: i32,
     name: String,
-    email: String,
-    username: String
+    username: String,
+    email: Option<String>
 }
 
-pub async fn get_users() -> Json<Vec<User>> {
-    
-    // Some JSON input data as a &str. Maybe this comes from the user.
-     let mut user = User {
-         id: 24,
-         name: "Kobe Bryant".to_owned(),
-         email: "kobe@lakers.com".to_owned(),
-         username: "kobe_bryant".to_owned()
-     };
+pub async fn get_players() -> Json<Vec<Player>> {
 
-    let mut v: Vec<User> = Vec::new();
-    v.push(user);
+    let users = sqlx::query_as!( 
+        Player,
+        "select number, name, email, username from player"
+    )
+    .fetch_all(db_utils::get_pool()) 
+    .await;
 
-    user = User {
-        id: 32,
-        name: "Shaquile O'Neal".to_owned(),
-        email: "shaq@lakers.com".to_owned(),
-        username: "shaq_oneal".to_owned()
-    };
-
-    v.push(user);
-
-    Json(v)
+    Json(users.unwrap())
 }
