@@ -14,6 +14,7 @@ pub struct Player {
     email: Option<String>
 }
 
+pub const PLAYERS_API: &str  = "/api/players";
 pub async fn get_players() -> Json<Vec<Player>> {
 
     let users = sqlx::query_as!( 
