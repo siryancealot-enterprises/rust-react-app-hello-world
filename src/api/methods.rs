@@ -14,7 +14,9 @@ pub struct Player {
     email: Option<String>
 }
 
+// BEGIN: Player API
 pub const PLAYERS_API: &str  = "/api/players";
+
 pub async fn get_players() -> Json<Vec<Player>> {
 
     let users = sqlx::query_as!( 
@@ -28,7 +30,6 @@ pub async fn get_players() -> Json<Vec<Player>> {
 }
 
 
-pub const ADD_PLAYER_API: &str  = "/api/add_player";
 pub async fn add_player(extract::Json(player_to_add): extract::Json<Player>) -> Json<Player> {
 
     let new_player = sqlx::query_as!(
@@ -52,3 +53,4 @@ pub async fn add_player(extract::Json(player_to_add): extract::Json<Player>) -> 
     Json(new_player.unwrap())
 }
 
+// END: Player API

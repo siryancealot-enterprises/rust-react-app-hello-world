@@ -1,9 +1,9 @@
 import React from 'react'
 import { Link } from "react-router-dom";
-import {AddPlayer} from '../components/AddPlayer'; 
+import {PlayerCreate} from '../components/PlayerCreate'; 
 import { Player } from '../components/PlayerList';
 
-function AddPlayerPage() {
+function PlayerCreatePage() { 
   function handleSubmit(formData: Player) { 
     console.log(formData);
   }
@@ -11,8 +11,8 @@ function AddPlayerPage() {
   return (
     <div className="App">
         <header className="App-header">
-            <div><AddPlayer onSubmit={handleSubmit} /></div>
-            <Link to={`/players`} >
+            <div><PlayerCreate onSubmit={handleSubmit} /></div>
+            <Link to={`/player-list`} >
                 <button>Go to List of Players</button>
             </Link>
         </header>
@@ -21,4 +21,4 @@ function AddPlayerPage() {
   
 }
 
-export default AddPlayerPage;
+export default PlayerCreatePage;

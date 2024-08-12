@@ -8,10 +8,10 @@ const HomePage = () => {
       <header className="App-header">
        WELCOME TO PROJECT X!
         <img src={logo} className="App-logo" alt="logo" />
-        <Link to={`/players`} className='App-Link' >
+        <Link to={`/player-list`} className='App-Link' >
             <button>Go to List of Players page</button>
         </Link> 
-        <Link to={`/add-player`} className='App-Link' >
+        <Link to={`/player-create`} className='App-Link' >
             <button>Add a player</button>
         </Link> 
         <Link to={`/rando?start=1&end=1000`} target="_blank" >

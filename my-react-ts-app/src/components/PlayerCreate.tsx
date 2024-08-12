@@ -1,11 +1,11 @@
 import React from 'react'
-import {Player} from '../components/PlayerList'; 
+import {Player} from './PlayerList'; 
 
 interface FormProps {
   onSubmit: (data: Player) => void;
 }
-
-export function AddPlayer({ onSubmit }: FormProps) {
+ 
+export function PlayerCreate({ onSubmit }: FormProps) {
   const [formData, setFormData] = React.useState<Player>({ name: '', number: 0, username: '', email: '' });
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -24,7 +24,7 @@ export function AddPlayer({ onSubmit }: FormProps) {
     // POST TO add_player API
     const addPlayer = async () => {
         try {
-          const response = await fetch('/api/add_player', {
+          const response = await fetch('/api/players', {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -71,4 +71,4 @@ export function AddPlayer({ onSubmit }: FormProps) {
   );
 }
 
-export default AddPlayer;
+export default PlayerCreate;

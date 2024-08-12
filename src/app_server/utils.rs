@@ -3,8 +3,9 @@
 use axum::{extract::Query, http::Error, response::Html, routing::{get, post}, Router};
 use serde::Deserialize;
 use tower_http::services::{ServeDir, ServeFile};
-use crate::api::{self, methods::{ADD_PLAYER_API, PLAYERS_API}};
 use rand::{thread_rng, Rng};
+
+use crate::api::{self, methods::PLAYERS_API};
 
 
 pub async fn init_app_server() -> Result<(), Error> {
@@ -35,7 +36,7 @@ fn init_router() -> Router {
         // Route to a random static html file
         .nest_service( "/other-index", ServeFile::new("index2.html"))
         .route( PLAYERS_API, get(api::methods::get_players))
-        .route( ADD_PLAYER_API, post(api::methods::add_player))
+        .route( PLAYERS_API, post(api::methods::add_player))
 }
 
 
