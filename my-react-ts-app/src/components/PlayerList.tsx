@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-interface Player {
+export interface Player {
   number: number;
   name: string;
   email: string;

@@ -11,6 +11,9 @@ const HomePage = () => {
         <Link to={`/players`} className='App-Link' >
             <button>Go to List of Players page</button>
         </Link> 
+        <Link to={`/add-player`} className='App-Link' >
+            <button>Add a player</button>
+        </Link> 
         <Link to={`/rando?start=1&end=1000`} target="_blank" >
             <button>Generate a random number, eleswhere</button>
         </Link>
