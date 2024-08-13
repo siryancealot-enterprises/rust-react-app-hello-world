@@ -1,12 +1,23 @@
 import React from 'react'
+import {useState} from "react";
 import {Player} from './PlayerList'; 
 
 interface FormProps {
   onSubmit: (data: Player) => void;
 }
+
+interface CreatedPlayer {
+  player: Player | null;
+  error: string | null;
+}
  
 export function PlayerCreate({ onSubmit }: FormProps) {
   const [formData, setFormData] = React.useState<Player>({ name: '', number: 0, username: '', email: '' });
+
+  const [state, setState] = useState<CreatedPlayer>({
+    player: null,
+    error: null,
+  });
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -33,41 +44,55 @@ export function PlayerCreate({ onSubmit }: FormProps) {
             body: JSON.stringify(formData)
           });
           const player = await response.json();
-        //   setState({ players, loading: false, error: null });
+          setState({ player, error: null });
         } catch (error) {
             console.log ('UI ERROR: ' + error);
-
-            // TODO SWY: Do something with setState when we have it
+            // TODO SWY: need to pipe in the actual and usable error message from server
+            setState({ player: null, error: 'Player creation error!'});
         }
       };
   
       addPlayer();
   }
 
+
+  if (state.player) {
+    return <div>
+      Created player: {state.player.name}, with number: {state.player.number}
+    </div>;
+  }
+
+  if (state.error) {
+    return <div>{state.error}</div>;
+  }
+
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Name:
-        <input type="text" name="name" value={formData.name} onChange={handleInputChange} />
-      </label>
-      <br />
-      <label>
-        Number:
-        <input type="number" name="number" value={formData.number} onChange={handleInputChange} />
-      </label>
-      <br />
-      <label>
-        Username:
-        <input type="text" name="username" value={formData.username} onChange={handleInputChange} />
-      </label>
-      <br />
-      <label>
-        Email:
-        <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
-      </label>
-      <br />
-      <button type="submit">Submit</button>
-    </form>
+    <div>
+      <h2>Add your player details:</h2>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Name:
+          <input type="text" name="name" value={formData.name} onChange={handleInputChange} />
+        </label>
+        <br />
+        <label>
+          Number:
+          <input type="number" name="number" value={formData.number} onChange={handleInputChange} />
+        </label>
+        <br />
+        <label>
+          Username:
+          <input type="text" name="username" value={formData.username} onChange={handleInputChange} />
+        </label>
+        <br />
+        <label>
+          Email:
+          <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
+        </label>
+        <br />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
   );
 }
 

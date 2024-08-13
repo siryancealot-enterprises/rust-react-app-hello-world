@@ -29,8 +29,7 @@ const usePlayers = (): PlayersState => {
         const players = await response.json();
         setState({ players, loading: false, error: null });
       } catch (error) {
-        setState({ players: null, loading: false, error: "need to get the error message thing working below" });
-        // setState({ players: null, loading: false, error: error.message });
+         setState({ players: null, loading: false, error: "Error retrieving list: " + error });
       }
     };
 
