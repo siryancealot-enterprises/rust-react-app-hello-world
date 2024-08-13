@@ -2,8 +2,8 @@
 // your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
 // run the analysis and then report in "problems/compile errors" in your IDE that yo nee
 
-use axum::{ extract::Path, http::{header, StatusCode}, response::{IntoResponse, Response}, Json};
-use serde::{Serialize, Deserialize};
+use axum::{ extract::Path, http::StatusCode, response::IntoResponse, Json};
+use serde::{ Deserialize, Serialize};
 use crate::db;
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -43,7 +43,7 @@ pub async fn get_player(Path(id): Path<i32>) -> Json<Player> {
     Json(users.unwrap())  
 }
 
-pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
+pub async fn add_player(Json(player_to_add): Json<Player>) -> Result<Json<Player>, impl IntoResponse> {
 
     let new_player = sqlx::query_as!(
         Player,
@@ -60,15 +60,22 @@ pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse 
     .await;
 
     if new_player.is_err() {
-        print!("Error inserting new player: {0}", player_to_add.name);
-    }
-    
-    Response::builder()
-    .status(StatusCode::CREATED)
-    .header(header::CONTENT_TYPE, "application/json")
-    .body(Json(new_player.unwrap()).into_response())
-    .unwrap()
+        Err((
+             StatusCode::INTERNAL_SERVER_ERROR,
+             format!("Failed to delete user: {}", new_player.err().expect("couldnt get error message")),
+        ))
+    } else {
+        Ok(Json(new_player.unwrap()))
 
+        // TODO SWY: If I wanted to send back a custom reposnse, or say use the StatusCode::CREATED response code, 
+        // I'd use the code below. But it would conflict with the return type in the Error branch as the Body type 
+        // would be different ). Hmmm...
+        // Response::builder()
+        // .status(StatusCode::CREATED)
+        // .header(header::CONTENT_TYPE, "application/json")
+        // .body(Json(new_player.unwrap()))
+        // .unwrap()
+    }
 }
 
 // END: Player API
