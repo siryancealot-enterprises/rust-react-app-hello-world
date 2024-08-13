@@ -2,7 +2,7 @@
 // your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
 // run the analysis and then report in "problems/compile errors" in your IDE that yo nee
 
-use axum::{extract, Json};
+use axum::{ extract::Path, http::{header, StatusCode}, response::{IntoResponse, Response}, Json};
 use serde::{Serialize, Deserialize};
 use crate::db;
 
@@ -30,7 +30,20 @@ pub async fn get_players() -> Json<Vec<Player>> {
 }
 
 
-pub async fn add_player(extract::Json(player_to_add): extract::Json<Player>) -> Json<Player> {
+pub async fn get_player(Path(id): Path<i32>) -> Json<Player> {
+
+    let users = sqlx::query_as!( 
+        Player,
+        "select number, name, email, username from player where number = $1",
+        id
+    )
+    .fetch_one(db::utils::get_pool()) 
+    .await;
+
+    Json(users.unwrap())  
+}
+
+pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
 
     let new_player = sqlx::query_as!(
         Player,
@@ -50,7 +63,12 @@ pub async fn add_player(extract::Json(player_to_add): extract::Json<Player>) -> 
         print!("Error inserting new player: {0}", player_to_add.name);
     }
     
-    Json(new_player.unwrap())
+    Response::builder()
+    .status(StatusCode::CREATED)
+    .header(header::CONTENT_TYPE, "application/json")
+    .body(Json(new_player.unwrap()).into_response())
+    .unwrap()
+
 }
 
 // END: Player API

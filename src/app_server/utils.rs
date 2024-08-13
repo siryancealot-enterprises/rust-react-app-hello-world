@@ -36,7 +36,9 @@ fn init_router() -> Router {
         // Route to a random static html file
         .nest_service( "/other-index", ServeFile::new("index2.html"))
         .route( PLAYERS_API, get(api::methods::get_players))
+        .route( format!("{}{}", PLAYERS_API, "/:id").as_str(), get(api::methods::get_player))
         .route( PLAYERS_API, post(api::methods::add_player))
+        
 }
 
 
