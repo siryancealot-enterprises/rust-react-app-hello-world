@@ -28,7 +28,7 @@ pub async fn init_db_conn_pool() -> Result<(), sqlx::Error> {
     Ok(())
 }
 
-// TODO: does this just hand a DB connection as an effect of the &'static" syntax?  If so, rename.
+// TODO SWY: does this just hand a DB connection as an effect of the &'static" syntax?  If so, rename.
 pub fn get_pool() ->  &'static Pool<Postgres> {
     return CONN_POOL.get().expect("ALERT: Don't have an availalbe pool anymore!");
 }
