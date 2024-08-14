@@ -1,8 +1,8 @@
 import React from 'react'
 import { Link } from "react-router-dom";
-import { PlayerCreate } from '../components/PlayerCreate'; 
 import { Player } from '../components/Player';
 import { getPlayerListURL } from './PlayerListPage';
+import PlayerCreateComponent from '../components/PlayerCreate';
 
 export function getPlayerCreateURL(): string {
   return `/player-create`;
@@ -16,7 +16,7 @@ function PlayerCreatePage() {
   return (
     <div className="App">
         <header className="App-header">
-            <div><PlayerCreate onSubmit={handleSubmit} /></div>
+            <div><PlayerCreateComponent onSubmit={handleSubmit} /></div>
             <Link to={getPlayerListURL()} >
                 <button>Go to List of Players</button>
             </Link>

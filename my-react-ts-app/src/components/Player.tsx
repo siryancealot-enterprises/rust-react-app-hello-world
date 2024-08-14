@@ -39,7 +39,7 @@ interface PlayerState {
       };
   
       fetchPlayer();
-    }, []);
+    }, [id]);
   
     return state;
   };
@@ -48,7 +48,7 @@ interface PlayerState {
     id: string;
   };
 
-const Player: React.FC<PlayerProps> = ({ id }): JSX.Element  => {
+const PlayerComponent: React.FC<PlayerProps> = ({ id }): JSX.Element  => {
 
     const { player, loading, error } = usePlayer(id);
 
@@ -75,4 +75,4 @@ const Player: React.FC<PlayerProps> = ({ id }): JSX.Element  => {
     return <></>
   }
   
-export default Player;
+export default PlayerComponent;

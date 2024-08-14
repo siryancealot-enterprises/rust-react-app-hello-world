@@ -13,7 +13,7 @@ interface CreatedPlayer {
   error: string | null;
 }
  
-export function PlayerCreate({ onSubmit }: FormProps) {
+export function PlayerCreateComponent({ onSubmit }: FormProps) {
   const [formData, setFormData] = React.useState<Player>({ id: null, name: '', number: 0, username: '', email: '' });
 
   const [state, setState] = useState<CreatedPlayer>({
@@ -22,7 +22,7 @@ export function PlayerCreate({ onSubmit }: FormProps) {
   });
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
+    const { name } = event.target;
     // TODO SWY: This line below is to handle "number" types in forms coming across with values as strings,
     // which JSON.stringify sends over in double quotes, which makes the server side JSON parser throw up. 
     // see: https://stackoverflow.com/questions/61070803/how-to-handle-number-input-in-typescript
@@ -101,4 +101,4 @@ export function PlayerCreate({ onSubmit }: FormProps) {
   );
 }
 
-export default PlayerCreate;
+export default PlayerCreateComponent;

@@ -2,7 +2,6 @@ import React from 'react'
 import { Link, useParams } from "react-router-dom";
 import PlayerComponent from "../components/Player";
 import { getPlayerListURL } from './PlayerListPage';
-import { isNumericLiteral } from 'typescript';
 
 export function getPlayerPageURL(id : string | null): string {
     return `/player/` + id;

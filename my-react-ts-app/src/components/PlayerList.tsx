@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Player } from "./Player";
-import PlayerPage, { getPlayerPageURL } from "../pages/PlayerPage";
+import { getPlayerPageURL } from "../pages/PlayerPage";
 
 interface PlayersState {
   players: Player[] | null;
@@ -35,7 +35,7 @@ const usePlayers = (): PlayersState => {
   return state;
 };
 
-function PlayerList() {
+function PlayerListComponent() {
   const { players, loading, error } = usePlayers();
 
   if (loading) {
@@ -62,4 +62,4 @@ function PlayerList() {
   );
 }
 
-export default PlayerList;
+export default PlayerListComponent;

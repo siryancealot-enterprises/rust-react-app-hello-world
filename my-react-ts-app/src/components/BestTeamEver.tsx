@@ -1,6 +1,6 @@
 import React from "react";
 
-const FirstComponent: React.FC<{}> = () => {
+const BestTeamEverComponent: React.FC<{}> = () => {
   return (
     <div>
         <h1>Los Angeles Lakers!</h1>
@@ -11,4 +11,4 @@ const FirstComponent: React.FC<{}> = () => {
   );
 };
     
-export default FirstComponent;
+export default BestTeamEverComponent;
