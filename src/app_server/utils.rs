@@ -1,6 +1,6 @@
 
 
-use axum::{extract::Query, http::Error, response::Html, routing::{get, post}, Router};
+use axum::{extract::Query, http::{Error, Request}, middleware::{self, Next}, response::{Html, Response}, routing::{get, post, Router}, body::Body};
 use serde::Deserialize;
 use tower_http::services::{ServeDir, ServeFile};
 use rand::{thread_rng, Rng};
@@ -38,9 +38,9 @@ fn init_router() -> Router {
         .route( PLAYERS_API, get(api::methods::get_players))
         .route( format!("{}{}", PLAYERS_API, "/:id").as_str(), get(api::methods::get_player))
         .route( PLAYERS_API, post(api::methods::add_player))
+        .layer(middleware::from_fn(logging_middleware))
         
 }
-
 
 
 // `Deserialize` need be implemented to use with `Query` extractor.
@@ -56,4 +56,15 @@ async fn random_number_handler(Query(range): Query<RangeParameters>) -> Html<Str
 
     // Send response in html format.
     Html(format!("<h1>Random Number: {}</h1></br><a href='/'>Go Back</a>", random_number))
+}
+
+
+// Basic logging: logs a visit to any of this server's endpoints.
+// Yes, "middleware" is a term in Rust and Axum: 
+// "Middleware in Rust refers to the concept of adding additional layers or functionality between different components of a software system,"
+// https://docs.rs/axum/latest/axum/middleware/index.html
+// https://medium.com/@alexeusgr/what-is-middleware-in-rust-43924cad8076
+async fn logging_middleware(req: Request<Body>, next: Next) -> Response {
+    println!("Received a request to {}", req.uri());
+    next.run(req).await
 }
