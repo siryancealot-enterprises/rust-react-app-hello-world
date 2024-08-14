@@ -1,19 +1,27 @@
 # rust-react-app-hello-world
 
-This demonstrates how to use Rust as the single server and runtime needed to serve up a React application written in TypeScript.
+This demonstrates how to use Rust as the single server and runtime needed to serve up a React Single Page Application (SPA) written in TypeScript. 
 
-Meaning, it does not use another server for serving the React app (such as Node.js), rather Rust serves up the statically generated React application files itself. We still use Node to compile the React app and generate the static files. 
+The SPA talks to APIs on the Rust server, which talks to a Postgres DB. 
 
-We're using the Axum web application server framework for Rust.
+We do not use another server for serving the React app (such as Node.js), rather the single Rust server serves up the statically generated React application files to the requesting client. We still use Node to compile the React SPA and generate its static files. 
 
-We're using Postgres DB with the Rust SQLX client.
+We're using Rust's [Axum](https://docs.rs/axum/latest/axum/) web application server framework.
 
-You should inspect the .env file at project root to verify or change to match your local configuration.
+We're using Postgres DB with Rust's [sqlx](https://docs.rs/sqlx/latest/sqlx/) toolkit for client interaction and other DB utilities.
+
 
 ## How to build 
 
 ### Requirements
-This assumes you have the following already installed locally: VSCode, Git, Rust, Node, and a working Postgres database (in Docker or otherwise). [Here are instructions on how to install any of these](https://docs.google.com/document/d/1Xh-SnX5DuJubVoiXvrFGsymZAgfo_j1fL0gJeouUldA/edit#heading=h.nmiyh3e307cw).
+The instructions below assume you have the following installed locally: 
+1. Git 
+2. Rust (v1.80+) 
+3. Node (v20.16.0+)
+4. Postgres (v16.4+) running and available (via Docker or otherwise)
+5. (optional) VSCode (v1.90+ with the "rust-analyzer" extension installed) 
+
+See the [Dev Environment Setup](https://docs.google.com/document/d/1Xh-SnX5DuJubVoiXvrFGsymZAgfo_j1fL0gJeouUldA/edit#heading=h.nmiyh3e307cw) section for instructions on how to install any of the above.
 
 ### Instructions
-With those requirements fulfilled, see the [Sync and Build the Repo](https://docs.google.com/document/d/1Xh-SnX5DuJubVoiXvrFGsymZAgfo_j1fL0gJeouUldA/edit#heading=h.xjl3tbax05i7) section on how to build this project.
+With those requirements fulfilled, see the [Sync the Repo and Build the App](https://docs.google.com/document/d/1Xh-SnX5DuJubVoiXvrFGsymZAgfo_j1fL0gJeouUldA/edit#heading=h.xjl3tbax05i7) section on how to build this project and run the app.
