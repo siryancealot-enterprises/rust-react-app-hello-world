@@ -17,35 +17,55 @@ pub struct Player {
 // BEGIN: Player API
 pub const PLAYERS_API: &str  = "/api/players";
 
-pub async fn get_players() -> Json<Vec<Player>> {
+pub async fn get_players() -> impl IntoResponse {
 
-    let users = sqlx::query_as!( 
+    let players = match sqlx::query_as!( 
         Player,
         "select number, name, email, username from player"
     )
     .fetch_all(db::utils::get_pool()) 
-    .await;
+    .await
+    {
+        Ok(players) => players,
+        Err(err) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(err.to_string()),
+            )
+                .into_response()
+        }
+    };
 
-    Json(users.unwrap())  
+    (StatusCode::OK, Json(players)).into_response()
 }
 
 
-pub async fn get_player(Path(id): Path<i32>) -> Json<Player> {
+pub async fn get_player(Path(id): Path<i32>) -> impl IntoResponse {
 
-    let users = sqlx::query_as!( 
+    let player:Player = match sqlx::query_as!( 
         Player,
         "select number, name, email, username from player where number = $1",
         id
     )
     .fetch_one(db::utils::get_pool()) 
-    .await;
+    .await
+    {
+        Ok(player) => player,
+        Err(err) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(err.to_string()),
+            )
+                .into_response()
+        }
+    };
 
-    Json(users.unwrap())  
+    (StatusCode::OK, Json(player)).into_response()
 }
 
-pub async fn add_player(Json(player_to_add): Json<Player>) -> Result<Json<Player>, impl IntoResponse> {
+pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
 
-    let new_player = sqlx::query_as!(
+    let new_player:Player = match sqlx::query_as!(
         Player,
         r#"INSERT INTO player
         (number, name, username, email)
@@ -56,26 +76,20 @@ pub async fn add_player(Json(player_to_add): Json<Player>) -> Result<Json<Player
         player_to_add.username,
         player_to_add.email
     )
-    .fetch_one(db::utils::get_pool())
-    .await;
+    .fetch_one(db::utils::get_pool()) 
+    .await
+    {
+        Ok(new_player) => new_player,
+        Err(err) => {
+            return (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(err.to_string()),
+            )
+                .into_response()
+        }
+    };
 
-    if new_player.is_err() {
-        Err((
-             StatusCode::INTERNAL_SERVER_ERROR,
-             format!("Failed to delete user: {}", new_player.err().expect("couldnt get error message")),
-        ))
-    } else {
-        Ok(Json(new_player.unwrap()))
-
-        // TODO SWY: If I wanted to send back a custom reposnse, or say use the StatusCode::CREATED response code, 
-        // I'd use the code below. But it would conflict with the return type in the Error branch as the Body type 
-        // would be different ). Hmmm...
-        // Response::builder()
-        // .status(StatusCode::CREATED)
-        // .header(header::CONTENT_TYPE, "application/json")
-        // .body(Json(new_player.unwrap()))
-        // .unwrap()
-    }
+    (StatusCode::CREATED, Json(new_player)).into_response()
 }
 
 // END: Player API

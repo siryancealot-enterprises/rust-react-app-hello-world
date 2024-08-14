@@ -26,10 +26,14 @@ interface PlayerState {
             const response = await fetch(
                 "/api/players/" + number
             );
-            const player = await response.json();
-            setState({ player, loading: false, error: null });
+            const json_response = await response.json();
+            if (response.ok) {
+                setState({ player: json_response, loading: false,error: null });
+            } else {
+                setState({ player: null, loading: false, error: json_response });
+            }
         } catch (error) {
-            setState({ player: null, loading: false, error: "Error retrieving list: " + error });
+            setState({ player: null, loading: false, error: "Error retrieving: " + error });
         }
       };
   
@@ -52,7 +56,7 @@ const Player: React.FC<PlayerProps> = ({ number }): JSX.Element  => {
     }
   
     if (error) {
-      return <><div>{error}</div></> 
+      return <><div>Error retrieving: {error}</div></> 
     }
   
     if (player) {

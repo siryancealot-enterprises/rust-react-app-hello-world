@@ -43,12 +43,14 @@ export function PlayerCreate({ onSubmit }: FormProps) {
               },
               body: JSON.stringify(formData)
             });
-            const player = await response.json();
-            setState({ player, error: null });
+            const json_response = await response.json();
+            if (response.ok) {
+                setState({ player: json_response, error: null });
+            } else {
+                setState({ player: null, error: json_response });
+            }
         } catch (error) {
-              console.log ('UI ERROR: ' + error);
-              // TODO SWY: need to pipe in the actual and usable error message from server
-              setState({ player: null, error: 'Player creation error!'});
+              setState({ player: null, error: 'Player creation error: ' + error});
         }
       };
   
@@ -63,7 +65,7 @@ export function PlayerCreate({ onSubmit }: FormProps) {
   }
 
   if (state.error) {
-    return <div>{state.error}</div>;
+    return <div>Player creation error: {state.error}</div>;
   }
 
   return (
