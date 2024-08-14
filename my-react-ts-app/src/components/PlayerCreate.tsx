@@ -1,6 +1,8 @@
 import React from 'react'
 import {useState} from "react";
 import {Player} from './Player'; 
+import { getPlayerPageURL } from '../pages/PlayerPage';
+import { Link } from 'react-router-dom';
 
 interface FormProps {
   onSubmit: (data: Player) => void;
@@ -12,7 +14,7 @@ interface CreatedPlayer {
 }
  
 export function PlayerCreate({ onSubmit }: FormProps) {
-  const [formData, setFormData] = React.useState<Player>({ name: '', number: 0, username: '', email: '' });
+  const [formData, setFormData] = React.useState<Player>({ id: null, name: '', number: 0, username: '', email: '' });
 
   const [state, setState] = useState<CreatedPlayer>({
     player: null,
@@ -57,10 +59,11 @@ export function PlayerCreate({ onSubmit }: FormProps) {
       addPlayer();
   }
 
-
   if (state.player) {
     return <div>
-      Created player: {state.player.name}, with number: {state.player.number}
+      Created player: <Link to={getPlayerPageURL(state.player.id)} className='App-Link' >
+                      {state.player.name}
+          </Link>, with number: {state.player.number}
     </div>;
   }
 

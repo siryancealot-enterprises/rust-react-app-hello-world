@@ -4,24 +4,24 @@ import PlayerComponent from "../components/Player";
 import { getPlayerListURL } from './PlayerListPage';
 import { isNumericLiteral } from 'typescript';
 
-export function getPlayerPageURL(number : number): string {
-    return `/player/` + number;
+export function getPlayerPageURL(id : string | null): string {
+    return `/player/` + id;
 }
 
 export function getPlayerPageURLFormat(): string {
-    return `/player/:number`;
+    return `/player/:id`;
 }
 
 const PlayerPage = () => { 
     const props = useParams();
-    if  (props.number === undefined) {
-        return <><div>Missing player "number" parameter in the URL!</div></> 
+    if  (props.id === undefined) {
+        return <><div>Missing player "id" in the URL!</div></> 
     } else {
         return <div className="App">
             <header className="App-header">
                 <h2>Here's your player:</h2>
                 <br/> 
-                <div><PlayerComponent number={props.number}/></div>
+                <div><PlayerComponent id={props.id}/></div>
                 <Link to={getPlayerListURL()} className='App-Link' >
                 <button>Go to List of Players page</button>
                 </Link> 

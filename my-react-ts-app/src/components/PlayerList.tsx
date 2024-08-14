@@ -48,9 +48,9 @@ function PlayerList() {
 
   return (
     <ul>
-      {players?.map((player) => (
-      <li key={player.number}>
-          <Link to={getPlayerPageURL(player.number)} className='App-Link' >
+      {players?.map((player)  => (
+      <li key={player.id}>
+          <Link to={getPlayerPageURL(player.id)} className='App-Link' >
               Name: {player.name}
           </Link>
           Number: {player.number},

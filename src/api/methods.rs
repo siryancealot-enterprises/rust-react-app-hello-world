@@ -5,9 +5,11 @@
 use axum::{ extract::Path, http::StatusCode, response::IntoResponse, Json};
 use serde::{ Deserialize, Serialize};
 use crate::db;
+use uuid::{self, Uuid};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Player {
+    id: Option<Uuid>,
     number: i32,
     name: String,
     username: String,
@@ -21,7 +23,7 @@ pub async fn get_players() -> impl IntoResponse {
 
     let players = match sqlx::query_as!( 
         Player,
-        "select number, name, email, username from player"
+        "select id, number, name, email, username from player"
     )
     .fetch_all(db::utils::get_pool()) 
     .await
@@ -40,11 +42,11 @@ pub async fn get_players() -> impl IntoResponse {
 }
 
 
-pub async fn get_player(Path(id): Path<i32>) -> impl IntoResponse {
+pub async fn get_player(Path(id): Path<Uuid>) -> impl IntoResponse {
 
     let player:Player = match sqlx::query_as!( 
         Player,
-        "select number, name, email, username from player where number = $1",
+        "select id, number, name, email, username from player where id = $1",
         id
     )
     .fetch_one(db::utils::get_pool()) 
@@ -70,7 +72,7 @@ pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse 
         r#"INSERT INTO player
         (number, name, username, email)
         VALUES ($1, $2, $3, $4)
-        RETURNING number, name, username, email"#,
+        RETURNING id, number, name, username, email"#,
         player_to_add.number,
         player_to_add.name,
         player_to_add.username,

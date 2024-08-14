@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 export interface Player {
+    id: string | null;
     number: number;
     name: string;
     email: string;
@@ -13,7 +14,7 @@ interface PlayerState {
     error: string | null;
   }
 
-  const usePlayer = (number: String): PlayerState => {
+  const usePlayer = (id: String): PlayerState => {
     const [state, setState] = useState<PlayerState>({
       player: null,
       loading: true,
@@ -24,7 +25,7 @@ interface PlayerState {
       const fetchPlayer = async () => {
         try {
             const response = await fetch(
-                "/api/players/" + number
+                "/api/players/" + id
             );
             const json_response = await response.json();
             if (response.ok) {
@@ -44,12 +45,12 @@ interface PlayerState {
   };
   
   interface PlayerProps {
-    number: string;
+    id: string;
   };
 
-const Player: React.FC<PlayerProps> = ({ number }): JSX.Element  => {
+const Player: React.FC<PlayerProps> = ({ id }): JSX.Element  => {
 
-    const { player, loading, error } = usePlayer(number);
+    const { player, loading, error } = usePlayer(id);
 
     if (loading) {
       return <><div>Loading...</div></>
@@ -62,6 +63,7 @@ const Player: React.FC<PlayerProps> = ({ number }): JSX.Element  => {
     if (player) {
         return <>
         <div>
+            id: {player.id},
             Name: {player.name},
             Number: {player.number},
             Email: {player.email}, 
