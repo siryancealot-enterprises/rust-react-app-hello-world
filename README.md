@@ -1,4 +1,4 @@
-# react-app-hello-world
+# rust-react-app-hello-world
 
 This demonstrates how to use Rust as the single server and runtime needed to serve up a React application written in TypeScript.
 
