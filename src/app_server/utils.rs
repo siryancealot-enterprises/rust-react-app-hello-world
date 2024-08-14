@@ -65,6 +65,6 @@ async fn random_number_handler(Query(range): Query<RangeParameters>) -> Html<Str
 // https://docs.rs/axum/latest/axum/middleware/index.html
 // https://medium.com/@alexeusgr/what-is-middleware-in-rust-43924cad8076
 async fn logging_middleware(req: Request<Body>, next: Next) -> Response {
-    println!("Received a request to {}", req.uri());
+    println!("Received a request to {}, {}", req.uri(), req.method());
     next.run(req).await
 }
