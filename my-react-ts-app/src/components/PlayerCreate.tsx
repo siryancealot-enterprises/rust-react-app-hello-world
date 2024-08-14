@@ -1,8 +1,7 @@
-import React from 'react'
-import {useState} from "react";
-import {Player} from './Player'; 
-import { getPlayerPageURL } from '../pages/PlayerPage';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getPlayerPageURL } from '../pages/PlayerPage';
+import { Player } from './Player';
 
 interface FormProps {
   onSubmit: (data: Player) => void;

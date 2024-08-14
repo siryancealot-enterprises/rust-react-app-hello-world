@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link, useParams } from "react-router-dom";
 import PlayerComponent from "../components/Player";
 import { getPlayerListURL } from './PlayerListPage';

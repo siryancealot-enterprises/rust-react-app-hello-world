@@ -1,7 +1,6 @@
-import React from 'react'
 import { Link } from "react-router-dom";
-import PlayerListComponent from "../components/PlayerList";
 import BestTeamEver from "../components/BestTeamEver";
+import PlayerListComponent from "../components/PlayerList";
 
 export function getPlayerListURL(): string {
     return `/player-list`;

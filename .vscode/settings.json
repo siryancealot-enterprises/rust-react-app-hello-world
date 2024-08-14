@@ -1,3 +1,13 @@
 {
-    "github.gitAuthentication": true
+    "github.gitAuthentication": true,
+    "rust-analyzer.check.command": "clippy",
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "javascript.referencesCodeLens.enabled": true,
+    "javascript.updateImportsOnFileMove.enabled": "prompt",
+    "[typescript]": {
+        "editor.inlayHints.enabled": "on",
+    }   
 }

@@ -1,8 +1,7 @@
-import React from 'react'
 import { Link } from "react-router-dom";
 import { Player } from '../components/Player';
-import { getPlayerListURL } from './PlayerListPage';
 import PlayerCreateComponent from '../components/PlayerCreate';
+import { getPlayerListURL } from './PlayerListPage';
 
 export function getPlayerCreateURL(): string {
   return `/player-create`;

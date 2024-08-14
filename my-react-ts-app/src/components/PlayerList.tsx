@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Player } from "./Player";
 import { getPlayerPageURL } from "../pages/PlayerPage";
+import { Player } from "./Player";
 
 interface PlayersState {
   players: Player[] | null;

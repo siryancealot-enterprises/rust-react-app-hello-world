@@ -37,7 +37,7 @@ fn get_db_connect_string() -> String {
     let redacted_connect_string: String = connect_string.replace(password, "<password_redacted>");
     println!("DB Connect str: {0}", redacted_connect_string);
 
-    return connect_string
+    connect_string
 }
 
 // TODO SWY: does this just hand a DB connection as an effect of the &'static" syntax?  If so, rename.

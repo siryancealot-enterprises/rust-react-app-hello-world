@@ -1,11 +1,10 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/HomePage';
-import PlayerPage, { getPlayerPageURLFormat } from './pages/PlayerPage';
-import PlayerListPage, { getPlayerListURL } from './pages/PlayerListPage';
-import PlayerCreatePage, { getPlayerCreateURL } from './pages/PlayerCreatePage';
 import PageNotFoundPage from './pages/PageNotFoundPage';
+import PlayerCreatePage, { getPlayerCreateURL } from './pages/PlayerCreatePage';
+import PlayerListPage, { getPlayerListURL } from './pages/PlayerListPage';
+import PlayerPage, { getPlayerPageURLFormat } from './pages/PlayerPage';
 
 
 function App() {
