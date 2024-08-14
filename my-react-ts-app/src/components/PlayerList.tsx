@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
-
-export interface Player {
-  number: number;
-  name: string;
-  email: string;
-  username: string;
-}
+import { Link } from "react-router-dom";
+import { Player } from "./Player";
+import PlayerPage, { getPlayerPageURL } from "../pages/PlayerPage";
 
 interface PlayersState {
   players: Player[] | null;
@@ -23,13 +19,13 @@ const usePlayers = (): PlayersState => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const response = await fetch(
-            "/api/players"
-        );
-        const players = await response.json();
-        setState({ players, loading: false, error: null });
+          const response = await fetch(
+              "/api/players"
+          );
+          const players = await response.json();
+          setState({ players, loading: false, error: null });
       } catch (error) {
-         setState({ players: null, loading: false, error: "Error retrieving list: " + error });
+          setState({ players: null, loading: false, error: "Error retrieving list: " + error });
       }
     };
 
@@ -54,7 +50,9 @@ function PlayerList() {
     <ul>
       {players?.map((player) => (
       <li key={player.number}>
-          Name: {player.name}, 
+          <Link to={getPlayerPageURL(player.number)} className='App-Link' >
+              Name: {player.name}
+          </Link>
           Number: {player.number},
           Email: {player.email}, 
           Username: {player.username}

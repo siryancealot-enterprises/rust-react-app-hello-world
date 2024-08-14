@@ -1,6 +1,6 @@
 import React from 'react'
 import {useState} from "react";
-import {Player} from './PlayerList'; 
+import {Player} from './Player'; 
 
 interface FormProps {
   onSubmit: (data: Player) => void;
@@ -35,20 +35,20 @@ export function PlayerCreate({ onSubmit }: FormProps) {
     // POST TO add_player API
     const addPlayer = async () => {
         try {
-          const response = await fetch('/api/players', {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-          });
-          const player = await response.json();
-          setState({ player, error: null });
+            const response = await fetch('/api/players', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formData)
+            });
+            const player = await response.json();
+            setState({ player, error: null });
         } catch (error) {
-            console.log ('UI ERROR: ' + error);
-            // TODO SWY: need to pipe in the actual and usable error message from server
-            setState({ player: null, error: 'Player creation error!'});
+              console.log ('UI ERROR: ' + error);
+              // TODO SWY: need to pipe in the actual and usable error message from server
+              setState({ player: null, error: 'Player creation error!'});
         }
       };
   

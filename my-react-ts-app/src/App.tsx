@@ -2,8 +2,9 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/HomePage';
-import PlayerListPage from './pages/PlayerListPage';
-import PlayerCreatePage from './pages/PlayerCreatePage';
+import PlayerPage, { getPlayerPageURLFormat } from './pages/PlayerPage';
+import PlayerListPage, { getPlayerListURL } from './pages/PlayerListPage';
+import PlayerCreatePage, { getPlayerCreateURL } from './pages/PlayerCreatePage';
 import PageNotFoundPage from './pages/PageNotFoundPage';
 
 
@@ -12,8 +13,9 @@ function App() {
     <>
       <Routes>
         <Route path="/" Component={HomePage} />
-        <Route path="/player-list" Component={PlayerListPage} />
-        <Route path="/player-create" Component={PlayerCreatePage} />
+        <Route path={getPlayerPageURLFormat()} Component={PlayerPage} />
+        <Route path={getPlayerListURL()} Component={PlayerListPage} />
+        <Route path={getPlayerCreateURL()} Component={PlayerCreatePage} />
         <Route path="*" Component={PageNotFoundPage} />
       </Routes>
     </>
