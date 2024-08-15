@@ -19,7 +19,7 @@ The instructions below assume you have the following installed locally:
 2. Rust (v1.80+) 
 3. Node (v20.16.0+)
 4. Postgres (v16.4+) running and available (via Docker or otherwise)
-5. (optional) VSCode (v1.90+ with the "rust-analyzer" extension installed) 
+5. (optional) VSCode (v1.90+ with "rust-analyzer" and "ESLint" extensions installed) 
 
 See the [Dev Environment Setup](https://docs.google.com/document/d/1Xh-SnX5DuJubVoiXvrFGsymZAgfo_j1fL0gJeouUldA/edit#heading=h.nmiyh3e307cw) section for instructions on how to install any of the above.
 

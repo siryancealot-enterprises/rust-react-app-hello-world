@@ -6,7 +6,7 @@ export function getPlayerListURL(): string {
     return `/player-list`;
 }
 
-const PlayerListPage = () => {
+function PlayerListPage () {
 
     return <div className="App">
         <header className="App-header">

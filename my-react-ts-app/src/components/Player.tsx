@@ -14,7 +14,7 @@ interface PlayerState {
     error: string | null;
   }
 
-  const usePlayer = (id: String): PlayerState => {
+  const usePlayer = (id: string): PlayerState => {
     const [state, setState] = useState<PlayerState>({
       player: null,
       loading: true,
@@ -43,10 +43,10 @@ interface PlayerState {
   
     return state;
   };
-  
+
   interface PlayerProps {
     id: string;
-  };
+  }
 
 const PlayerComponent: React.FC<PlayerProps> = ({ id }): JSX.Element  => {
 

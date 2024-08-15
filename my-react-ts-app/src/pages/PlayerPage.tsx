@@ -10,7 +10,7 @@ export function getPlayerPageURLFormat(): string {
     return `/player/:id`;
 }
 
-const PlayerPage = () => { 
+function PlayerPage () { 
     const props = useParams();
     if  (props.id === undefined) {
         return <><div>Missing player "id" in the URL!</div></> 

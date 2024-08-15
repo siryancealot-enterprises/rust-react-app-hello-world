@@ -1,6 +1,5 @@
-import React from "react";
 
-const BestTeamEverComponent: React.FC<{}> = () => {
+function BestTeamEverComponent() {
   return (
     <div>
         <h1>Los Angeles Lakers!</h1>
@@ -9,6 +8,6 @@ const BestTeamEverComponent: React.FC<{}> = () => {
         <div>5 top ten all time</div>
     </div>
   );
-};
+}
     
 export default BestTeamEverComponent;
