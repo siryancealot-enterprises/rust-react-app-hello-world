@@ -48,9 +48,9 @@ interface PlayerState {
     id: string;
   }
 
-const PlayerComponent: React.FC<PlayerProps> = ({ id }): JSX.Element  => {
+function PlayerComponent ( props: PlayerProps ) {
 
-    const { player, loading, error } = usePlayer(id);
+    const { player, loading, error } = usePlayer(props.id);
 
     if (loading) {
       return <><div>Loading...</div></>
