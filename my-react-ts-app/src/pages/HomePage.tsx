@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import logo from '../logo.svg';
-import { getPlayerCreateURL } from './PlayerCreatePage';
-import { getPlayerListURL } from './PlayerListPage';
+import { PLAYER_CREATE_URL } from './PlayerCreatePage';
+import { PLAYER_LIST_URL } from './PlayerListPage';
 
 const HomePage = () => {
 
@@ -9,10 +9,10 @@ const HomePage = () => {
       <header className="App-header">
        WELCOME TO PROJECT X!
         <img src={logo} className="App-logo" alt="logo" />
-        <Link to={getPlayerListURL()} className='App-Link' >
+        <Link to={PLAYER_LIST_URL} className='App-Link' >
             <button>Go to List of Players page</button>
         </Link> 
-        <Link to={getPlayerCreateURL()} className='App-Link' >
+        <Link to={PLAYER_CREATE_URL} className='App-Link' >
             <button>Add a player</button>
         </Link> 
         <Link to={`/rando?start=1&end=1000`} target="_blank" >

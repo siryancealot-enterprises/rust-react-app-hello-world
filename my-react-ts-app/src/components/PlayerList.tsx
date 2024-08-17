@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getPlayerPageURL } from "../pages/PlayerPage";
+import { API_URLS, APIConstants } from "../constants";
+import { getPlayerDetailURL } from "../pages/PlayerPage";
 import { Player } from "./Player";
 
 interface PlayersState {
@@ -20,7 +21,7 @@ const usePlayers = (): PlayersState => {
     const fetchPlayers = async () => {
       try {
           const response = await fetch(
-              "/api/players"
+              APIConstants.PLATFORM_BASE_URL + API_URLS.PLAYER_API
           );
           const players = await response.json();
           setState({ players, loading: false, error: null });
@@ -50,7 +51,7 @@ function PlayerListComponent() {
     <ul>
       {players?.map((player)  => (
       <li key={player.id}>
-          <Link to={getPlayerPageURL(player.id)} className='App-Link' >
+          <Link to={getPlayerDetailURL(player.id)} className='App-Link' >
               Name: {player.name}
           </Link>
           Number: {player.number},

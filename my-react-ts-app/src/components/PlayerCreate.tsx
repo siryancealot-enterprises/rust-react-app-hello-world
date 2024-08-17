@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getPlayerPageURL } from '../pages/PlayerPage';
+import { API_URLS, APIConstants } from '../constants';
+import { getPlayerDetailURL } from '../pages/PlayerPage';
 import { Player } from './Player';
 
 interface FormProps {
@@ -36,11 +37,11 @@ export function PlayerCreateComponent({ onSubmit }: FormProps) {
     // POST TO add_player API
     const addPlayer = async () => {
         try {
-            const response = await fetch('/api/players', {
-              method: 'POST',
+            const response = await fetch(APIConstants.PLATFORM_BASE_URL + API_URLS.PLAYER_API, {
+              method: APIConstants.POST,
               headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
+                'Accept': APIConstants.APPLICATION_JSON_HEADER,
+                'Content-Type': APIConstants.APPLICATION_JSON_HEADER,
               },
               body: JSON.stringify(formData)
             });
@@ -60,7 +61,7 @@ export function PlayerCreateComponent({ onSubmit }: FormProps) {
 
   if (state.player) {
     return <div>
-      Created player: <Link to={getPlayerPageURL(state.player.id)} className='App-Link' >
+      Created player: <Link to={getPlayerDetailURL(state.player.id)} className='App-Link' >
                       {state.player.name}
           </Link>, with number: {state.player.number}
     </div>;

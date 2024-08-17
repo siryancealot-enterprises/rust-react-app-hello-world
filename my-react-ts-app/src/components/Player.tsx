@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_URLS, APIConstants } from "../constants";
 
 export interface Player {
     id: string | null;
@@ -25,7 +26,7 @@ interface PlayerState {
       const fetchPlayer = async () => {
         try {
             const response = await fetch(
-                "/api/players/" + id
+                APIConstants.PLATFORM_BASE_URL + API_URLS.PLAYER_API + '/' + id
             );
             const json_response = await response.json();
             if (response.ok) {

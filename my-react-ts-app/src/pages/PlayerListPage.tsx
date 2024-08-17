@@ -2,9 +2,7 @@ import { Link } from "react-router-dom";
 import BestTeamEver from "../components/BestTeamEver";
 import PlayerListComponent from "../components/PlayerList";
 
-export function getPlayerListURL(): string {
-    return `/player-list`;
-}
+export const PLAYER_LIST_URL = `/player-list`;
 
 function PlayerListPage () {
 

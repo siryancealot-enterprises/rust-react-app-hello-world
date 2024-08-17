@@ -1,14 +1,13 @@
 import { Link, useParams } from "react-router-dom";
 import PlayerComponent from "../components/Player";
-import { getPlayerListURL } from './PlayerListPage';
+import { PLAYER_LIST_URL } from './PlayerListPage';
 
-export function getPlayerPageURL(id : string | null): string {
+export function getPlayerDetailURL(id : string | null): string {
     return `/player/` + id;
 }
 
-export function getPlayerPageURLFormat(): string {
-    return `/player/:id`;
-}
+export const PLAYER_DETAIL_URL_FORMAT =  `/player/:id`;
+
 
 function PlayerPage () { 
     const props = useParams();
@@ -20,7 +19,7 @@ function PlayerPage () {
                 <h2>Here's your player:</h2>
                 <br/> 
                 <div><PlayerComponent id={props.id}/></div>
-                <Link to={getPlayerListURL()} className='App-Link' >
+                <Link to={PLAYER_LIST_URL} className='App-Link' >
                 <button>Go to List of Players page</button>
                 </Link> 
             </header>
