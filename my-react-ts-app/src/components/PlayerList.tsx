@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { API_URLS, APIConstants } from "../constants";
+import { API_URLS, APIConstants } from "../constants.ts";
 import { getPlayerDetailURL } from "../pages/PlayerPage";
 import { Player } from "./Player";
 
@@ -21,7 +21,7 @@ const usePlayers = (): PlayersState => {
     const fetchPlayers = async () => {
       try {
           const response = await fetch(
-              APIConstants.PLATFORM_BASE_URL + API_URLS.PLAYER_API
+              APIConstants.BACKEND_BASE_URL + API_URLS.PLAYER_API
           );
           const players = await response.json();
           setState({ players, loading: false, error: null });

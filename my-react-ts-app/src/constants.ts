@@ -11,13 +11,13 @@ export const APIConstants = Object.freeze({
     DELETE: 'DELETE',
     APPLICATION_JSON_HEADER: 'application/json',
     // eslint-disable-next-line no-undef
-    PLATFORM_BASE_URL: process.env.REACT_APP_PLATFORM_BASE_URL,
+    BACKEND_BASE_URL: process.env.REACT_APP_BACKEND_BASE_URL, // This is loaded from the .env file at React project root
     // ...
   })
 
   export const API_URLS = Object.freeze({
     // Should match what's defined in the Platform's API located in the platform api/methods.rs file 
     // TODO: auto generate these from a platform build routine (generating a constants/api_urls.js file specifically for this)
-    
+
     PLAYER_API: '/api/players',
   })

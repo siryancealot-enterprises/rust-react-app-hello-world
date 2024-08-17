@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { API_URLS, APIConstants } from '../constants';
+import { API_URLS, APIConstants } from '../constants.ts';
 import { getPlayerDetailURL } from '../pages/PlayerPage';
 import { Player } from './Player';
 
@@ -37,7 +37,7 @@ export function PlayerCreateComponent({ onSubmit }: FormProps) {
     // POST TO add_player API
     const addPlayer = async () => {
         try {
-            const response = await fetch(APIConstants.PLATFORM_BASE_URL + API_URLS.PLAYER_API, {
+            const response = await fetch(APIConstants.BACKEND_BASE_URL + API_URLS.PLAYER_API, {
               method: APIConstants.POST,
               headers: {
                 'Accept': APIConstants.APPLICATION_JSON_HEADER,
