@@ -1,10 +1,10 @@
-// the beauty of this is ::sqlx will analzye at build time if your sql statements below match up with 
+// the beauty of this is ::sqlx will analzye at build time if your sql statements below match up with
 // your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
 // run the analysis and then report in "problems/compile errors" in your IDE that yo nee
 
-use axum::{ extract::Path, http::StatusCode, response::IntoResponse, Json};
-use serde::{ Deserialize, Serialize};
 use crate::db;
+use axum::{extract::Path, http::StatusCode, response::IntoResponse, Json};
+use serde::{Deserialize, Serialize};
 use uuid::{self, Uuid};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -13,52 +13,41 @@ pub struct Player {
     number: i32,
     name: String,
     username: String,
-    email: Option<String>
+    email: Option<String>,
 }
 
 // BEGIN: Player API
-pub const PLAYERS_API: &str  = "/api/players";
+pub const PLAYERS_API: &str = "/api/players";
 
 pub async fn get_players() -> impl IntoResponse {
-
-    let players = match sqlx::query_as!( 
+    let players = match sqlx::query_as!(
         Player,
         "select id, number, name, email, username from player"
     )
-    .fetch_all(db::utils::get_pool()) 
+    .fetch_all(db::utils::get_pool())
     .await
     {
         Ok(players) => players,
         Err(err) => {
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(err.to_string()),
-            )
-                .into_response()
+            return (StatusCode::INTERNAL_SERVER_ERROR, Json(err.to_string())).into_response()
         }
     };
 
     (StatusCode::OK, Json(players)).into_response()
 }
 
-
 pub async fn get_player(Path(id): Path<Uuid>) -> impl IntoResponse {
-
-    let player:Player = match sqlx::query_as!( 
+    let player: Player = match sqlx::query_as!(
         Player,
         "select id, number, name, email, username from player where id = $1",
         id
     )
-    .fetch_one(db::utils::get_pool()) 
+    .fetch_one(db::utils::get_pool())
     .await
     {
         Ok(player) => player,
         Err(err) => {
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(err.to_string()),
-            )
-                .into_response()
+            return (StatusCode::INTERNAL_SERVER_ERROR, Json(err.to_string())).into_response()
         }
     };
 
@@ -66,8 +55,7 @@ pub async fn get_player(Path(id): Path<Uuid>) -> impl IntoResponse {
 }
 
 pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
-
-    let new_player:Player = match sqlx::query_as!(
+    let new_player: Player = match sqlx::query_as!(
         Player,
         r#"INSERT INTO player
         (number, name, username, email)
@@ -78,16 +66,12 @@ pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse 
         player_to_add.username,
         player_to_add.email
     )
-    .fetch_one(db::utils::get_pool()) 
+    .fetch_one(db::utils::get_pool())
     .await
     {
         Ok(new_player) => new_player,
         Err(err) => {
-            return (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(err.to_string()),
-            )
-                .into_response()
+            return (StatusCode::INTERNAL_SERVER_ERROR, Json(err.to_string())).into_response()
         }
     };
 
