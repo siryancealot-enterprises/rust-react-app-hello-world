@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { API_URLS, APIConstants } from "../constants.ts";
-import { getPlayerDetailURL } from "../pages/PlayerPage";
+import { getPlayerDetailURL } from "../pages/PlayerPage.tsx";
 import { Player } from "./Player";
 
 interface PlayersState {
@@ -48,18 +48,22 @@ function PlayerListComponent() {
   }
 
   return (
-    <ul>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Number</th>
+        <th>Email</th>
+        <th>Username</th>
+      </tr>
       {players?.map((player)  => (
-      <li key={player.id}>
-          <Link to={getPlayerDetailURL(player.id)} className='App-Link' >
-              Name: {player.name}
-          </Link>
-          Number: {player.number},
-          Email: {player.email}, 
-          Username: {player.username}
-      </li>
+        <tr key={player.id}>
+        <td><Link to={getPlayerDetailURL(player.id)} className='App-Link' >Name: {player.name}</Link></td>
+        <td>{player.number}</td>
+        <td>{player.email}</td>
+        <td>{player.username}</td>
+      </tr>
       ))}
-    </ul>
+    </table>
   );
 }
 

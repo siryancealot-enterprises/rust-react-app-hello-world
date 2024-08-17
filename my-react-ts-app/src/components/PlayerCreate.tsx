@@ -36,27 +36,27 @@ export function PlayerCreateComponent({ onSubmit }: FormProps) {
 
     // POST TO add_player API
     const addPlayer = async () => {
-        try {
-            const response = await fetch(APIConstants.BACKEND_BASE_URL + API_URLS.PLAYER_API, {
-              method: APIConstants.POST,
-              headers: {
-                'Accept': APIConstants.APPLICATION_JSON_HEADER,
-                'Content-Type': APIConstants.APPLICATION_JSON_HEADER,
-              },
-              body: JSON.stringify(formData)
-            });
-            const json_response = await response.json();
-            if (response.ok) {
-                setState({ player: json_response, error: null });
-            } else {
-                setState({ player: null, error: json_response });
-            }
-        } catch (error) {
-              setState({ player: null, error: 'Player creation error: ' + error});
+      try {
+        const response = await fetch(APIConstants.BACKEND_BASE_URL + API_URLS.PLAYER_API, {
+          method: APIConstants.POST,
+          headers: {
+            'Accept': APIConstants.APPLICATION_JSON_HEADER,
+            'Content-Type': APIConstants.APPLICATION_JSON_HEADER,
+          },
+          body: JSON.stringify(formData)
+        });
+        const json_response = await response.json();
+        if (response.ok) {
+          setState({ player: json_response, error: null });
+        } else {
+          setState({ player: null, error: json_response });
         }
-      };
-  
-      addPlayer();
+      } catch (error) {
+              setState({ player: null, error: 'Player creation error: ' + error});
+      }
+    };
+
+    addPlayer();
   }
 
   if (state.player) {
@@ -74,30 +74,30 @@ export function PlayerCreateComponent({ onSubmit }: FormProps) {
   return (
     <div>
       <h2>Add your player details:</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input type="text" name="name" value={formData.name} onChange={handleInputChange} />
-        </label>
-        <br />
-        <label>
-          Number:
-          <input type="number" name="number" value={formData.number} onChange={handleInputChange} />
-        </label>
-        <br />
-        <label>
-          Username:
-          <input type="text" name="username" value={formData.username} onChange={handleInputChange} />
-        </label>
-        <br />
-        <label>
-          Email:
-          <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
-        </label>
-        <br />
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Name:
+            <input type="text" name="name" value={formData.name} onChange={handleInputChange} />
+          </label>
+          <br />
+          <label>
+            Number:
+            <input type="number" name="number" value={formData.number} onChange={handleInputChange} />
+          </label>
+          <br />
+          <label>
+            Username:
+            <input type="text" name="username" value={formData.username} onChange={handleInputChange} />
+          </label>
+          <br />
+          <label>
+            Email:
+            <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
+          </label>
+          <br />
+          <button type="submit">Submit</button>
+        </form>
+      </div>
   );
 }
 

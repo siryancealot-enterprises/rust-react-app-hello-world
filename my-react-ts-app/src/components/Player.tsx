@@ -62,15 +62,22 @@ function PlayerComponent ( props: PlayerProps ) {
     }
   
     if (player) {
-        return <>
-        <div>
-            id: {player.id},
-            Name: {player.name},
-            Number: {player.number},
-            Email: {player.email}, 
-            Username: {player.username}
-        </div>
-        </>
+      return <>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Number</th>
+            <th>Email</th>
+            <th>Username</th>
+          </tr>
+          <tr key={player.id}>
+            <td>{player.name}</td>
+            <td>{player.number}</td>
+            <td>{player.email}</td>
+            <td>{player.username}</td>
+          </tr>
+        </table>
+      </>
     }
 
     return <></>

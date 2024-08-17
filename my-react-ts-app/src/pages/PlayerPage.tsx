@@ -19,7 +19,9 @@ function PlayerPage () {
                 <h2>Here's your player:</h2>
                 <br/> 
                 <div><PlayerComponent id={props.id}/></div>
-                <Link to={PLAYER_LIST_URL} className='App-Link' >
+                <br/>
+                <br/>
+                <Link to={PLAYER_LIST_URL} >
                 <button>Go to List of Players page</button>
                 </Link> 
             </header>

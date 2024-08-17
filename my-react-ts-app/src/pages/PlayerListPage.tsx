@@ -10,10 +10,13 @@ function PlayerListPage () {
         <header className="App-header">
             <div><BestTeamEver /></div>
             <br/>
-            <div>List of players: <PlayerListComponent/></div>
-            <Link to={`/`} >
+            <h3>Hall of Fame Players:</h3>
+            <div><PlayerListComponent/></div>
+            <div><Link to={`/`} >
                 <button>Go to home</button>
             </Link>
+            </div>
+            <br></br>
         </header>
     </div>
 
