@@ -74,30 +74,32 @@ export function PlayerCreateComponent({ onSubmit }: FormProps) {
   return (
     <div>
       <h2>Add your player details:</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Name:
-          <input type="text" name="name" value={formData.name} onChange={handleInputChange} />
-        </label>
-        <br />
-        <label>
-          Number:
-          <input type="number" name="number" value={formData.number} onChange={handleInputChange} />
-        </label>
-        <br />
-        <label>
-          Username:
-          <input type="text" name="username" value={formData.username} onChange={handleInputChange} />
-        </label>
-        <br />
-        <label>
-          Email:
-          <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
-        </label>
-        <br />
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Name:
+            <input type="text" name="name" value={formData.name} onChange={handleInputChange} />
+          </label>
+          <br />
+          <label>
+            Number:
+            <input type="number" name="number" value={formData.number} onChange={handleInputChange} />
+          </label>
+          <br />
+          <label>
+            Username:
+            <input type="text" name="username" value={formData.username} onChange={handleInputChange} />
+          </label>
+          <br />
+          <label>
+            Email:
+            <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
+          </label>
+          <br />
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    </div >
   );
 }
 

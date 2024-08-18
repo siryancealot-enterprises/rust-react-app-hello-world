@@ -15,9 +15,10 @@ function PlayerCreatePage() {
     <div className="App">
       <header className="App-header">
         <div><PlayerCreateComponent onSubmit={handleSubmit} /></div>
-        <Link to={PLAYER_LIST_URL} >
-          <button>Go to List of Players</button>
-        </Link>
+        <br />
+        <div>
+          <Link to={PLAYER_LIST_URL} ><button>Go to List of Players</button></Link>
+        </div>
       </header>
     </div>
   );
