@@ -57,9 +57,9 @@ function PlayerListComponent() {
       </tr>
       {players?.map((player) => (
         <tr key={player.id}>
-          <td><Link to={getPlayerDetailURL(player.id)} className='App-Link' >Name: {player.name}</Link></td>
+          <td><Link to={getPlayerDetailURL(player.id)} className='App-Link' >{player.name}</Link></td>
           <td>{player.number}</td>
-          <td>{player.email}</td>
+          <td><Link to={'mailto:' + (player.email)}>{player.email}</Link></td>
           <td>{player.username}</td>
         </tr>
       ))}
