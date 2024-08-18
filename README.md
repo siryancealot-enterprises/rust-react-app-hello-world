@@ -21,7 +21,7 @@ The instructions below assume you have the following installed locally:
 4. Postgres (v16.4+) running and available (via Docker or otherwise)
 5. (optional) VSCode (v1.90+ with "rust-analyzer" and "ESLint" extensions installed) 
 
-See the [Dev Environment Setup](https://docs.google.com/document/d/1Xh-SnX5DuJubVoiXvrFGsymZAgfo_j1fL0gJeouUldA/edit#heading=h.nmiyh3e307cw) section for instructions on how to install any of the above.
+See the [Dev Environment Setup](https://docs.google.com/document/d/1XNp3Rvjv013czinhsvlJ8TVzIqlS23XuRvU68ydVp28/edit#heading=h.nmiyh3e307cw) section for instructions on how to install any of the above.
 
 ### Instructions
-With those requirements fulfilled, see the [Sync the Repo and Build the App](https://docs.google.com/document/d/1Xh-SnX5DuJubVoiXvrFGsymZAgfo_j1fL0gJeouUldA/edit#heading=h.xjl3tbax05i7) section on how to build this project and run the app.
+With those requirements fulfilled, see the [Sync the Repo and Build the App](https://docs.google.com/document/d/1XNp3Rvjv013czinhsvlJ8TVzIqlS23XuRvU68ydVp28/edit#heading=h.xjl3tbax05i7) section on how to build this project and run the app.
