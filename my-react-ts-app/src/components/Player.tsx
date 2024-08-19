@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { API_URLS, APIConstants } from "../constants.ts";
 
 export interface Player {
-  id: string | null;
-  number: number;
-  name: string;
-  email: string;
-  username: string;
+  id: string | undefined;
+  number: number | undefined;
+  name: string | undefined;
+  email: string | undefined;
+  username: string | undefined;
 }
 
 interface PlayerState {

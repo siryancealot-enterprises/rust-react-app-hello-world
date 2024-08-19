@@ -14,7 +14,7 @@ interface CreatedPlayer {
 }
 
 export function PlayerCreateComponent({ onSubmit }: FormProps) {
-  const [formData, setFormData] = React.useState<Player>({ id: null, name: '', number: 0, username: '', email: '' });
+  const [formData, setFormData] = React.useState<Player>({ id: undefined, name: undefined, number: undefined, username: undefined, email: undefined });
 
   const [state, setState] = useState<CreatedPlayer>({
     player: null,

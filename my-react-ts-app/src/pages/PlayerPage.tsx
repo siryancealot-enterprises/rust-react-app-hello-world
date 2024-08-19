@@ -2,7 +2,10 @@ import { Link, useParams } from "react-router-dom";
 import PlayerComponent from "../components/Player";
 import { PLAYER_LIST_URL } from './PlayerListPage';
 
-export function getPlayerDetailURL(id: string | null): string {
+export function getPlayerDetailURL(id: string | undefined): string {
+    if (id === undefined) {
+        throw new Error('Missing id');
+    }
     return `/player/` + id;
 }
 
