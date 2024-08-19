@@ -2,6 +2,7 @@ use dotenv::dotenv;
 
 mod api;
 mod app_server;
+mod configs;
 mod db;
 
 #[tokio::main]

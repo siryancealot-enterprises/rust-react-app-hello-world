@@ -11,6 +11,8 @@ serde = { version = "1.0.204", features = ["derive"] }
 sqlx = { version = "0.8.0", features = ["postgres", "runtime-tokio-native-tls", "uuid"] }
 sqlx-cli = { version = "0.8.0", default-features = false, features = ["native-tls", "postgres"] }
 tokio = { version = "1", features = ["full"] }
-tower-http = { version = "0.5.2", features = ["cors", "fs"] }
+tower-http = { version = "0.5.2", features = ["compression-full", "fs", "timeout", "trace"] }
 uuid = { version = "1.10.0", features = ["v4", "serde"] }
+tracing = "0.1.4"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
