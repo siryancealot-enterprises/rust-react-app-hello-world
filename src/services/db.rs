@@ -16,7 +16,7 @@ static CONN_POOL: OnceCell<Pool<Postgres>> = OnceCell::const_new();
 /// 2. Connetion acquire timeout
 /// 3. Prints out the connection string (with password redacted)
 ///
-pub async fn init_db_conn_pool() -> Result<(), sqlx::Error> {
+pub async fn init_db_conn_pool() {
     let pool = PgPoolOptions::new()
         .max_connections(configs::get_env_var_as_number("DATABASE_MAX_CONNECTIONS"))
         .acquire_timeout(Duration::from_secs(u64::from(
@@ -30,19 +30,17 @@ pub async fn init_db_conn_pool() -> Result<(), sqlx::Error> {
         .bind(150_i64)
         .fetch_one(&pool)
         .await
-        .expect("can't connect to database");
-
-    println!("DB ready for business: {:?}", row.0 > 0);
+        .expect("can't run test query against database");
 
     let lazy_db_init = CONN_POOL.set(pool);
     if lazy_db_init.is_err() {
         panic!(
-            "ALERT: DB init has error:  {0}",
+            "ALERT: DB conn pool error:  {0}",
             lazy_db_init.err().unwrap()
         );
     }
 
-    Ok(())
+    println!("DB ready for business: {:?}", row.0 > 0);
 }
 
 // Return the DB connect string from the .env file, priting out the string with the DB password redacted.

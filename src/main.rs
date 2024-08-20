@@ -7,11 +7,7 @@ async fn main() {
     // Load environment variables from .env (at project root... for now)
     dotenv().ok();
 
-    if services::db::init_db_conn_pool().await.is_err() {
-        panic!("PANIC: DB UNHEALTHY, check logs")
-    }
+    services::db::init_db_conn_pool().await;
 
-    if services::app_server::init_app_server().await.is_err() {
-        panic!("PANIC: APP SERVER UNHEALTHY, check logs")
-    }
+    services::app_server::init_app_server().await;
 }

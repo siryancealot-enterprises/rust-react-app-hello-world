@@ -4,11 +4,7 @@ use std::time::Duration;
 
 use crate::api;
 use crate::services::configs;
-use axum::{
-    http::{Error, StatusCode},
-    response::IntoResponse,
-    routing::Router,
-};
+use axum::{http::StatusCode, response::IntoResponse, routing::Router};
 use tokio::signal;
 use tower_http::{
     compression::CompressionLayer,
@@ -27,7 +23,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 /// 3. Graceful shutdown (waits up to APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION seconds for in-flight requests to finish)
 /// 4. Basic request and response logging
 ///
-pub async fn init_app_server() -> Result<(), Error> {
+pub async fn init_app_server() {
     // Enable tracing.
     tracing_subscriber::registry()
         .with(
@@ -44,16 +40,16 @@ pub async fn init_app_server() -> Result<(), Error> {
     )
     .await
     .unwrap();
+
     println!(
         "App server listening on: {}",
         listener.local_addr().unwrap()
     );
+
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
         .await
-        .unwrap();
-
-    Ok(())
+        .expect("App server failed to initialize");
 }
 
 fn init_router() -> Router {
