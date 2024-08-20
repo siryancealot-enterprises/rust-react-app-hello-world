@@ -1,3 +1,5 @@
+//! General purpose set of utililties for interacting with configuration values.
+
 /// Takes a enviornemnt variable name found in the root .env file assumed to be an integer,
 /// retrireves it, and converts it to a number
 pub fn get_env_var_as_number(var_name: &str) -> u32 {

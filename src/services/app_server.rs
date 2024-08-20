@@ -1,17 +1,21 @@
+//! Provides utilities to initialize usage of the App Server and provide functions to interact with it.
+//
 use std::time::Duration;
 
-use crate::configs;
+use crate::api;
+use crate::services::configs;
 use axum::{
     extract::Query,
     http::{Error, StatusCode},
     response::{Html, IntoResponse},
-    routing::{get, post, Router},
+    routing::{get, Router},
 };
 use rand::{thread_rng, Rng};
 use serde::Deserialize;
 use tokio::signal;
 use tower_http::{
     compression::CompressionLayer,
+    decompression::RequestDecompressionLayer,
     services::{ServeDir, ServeFile},
     timeout::TimeoutLayer,
     trace::TraceLayer,
@@ -19,11 +23,9 @@ use tower_http::{
 
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use crate::api::{self, methods::PLAYERS_API};
-
 /// Initalize an Axum app server with the following features:
 ///
-/// 1. Routes defined to serve the React SPA static files as well as server-side APIs
+/// 1. Routes defined to serve the Single Page Application (SPA) static files as well as API endpoints
 /// 2. Response compression
 /// 3. Graceful shutdown (waits up to APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION seconds for in-flight requests to finish)
 /// 4. Basic request and response logging
@@ -66,15 +68,15 @@ fn init_router() -> Router {
     let path_with_index_html = react_app_dist_location.to_string() + "/index.html";
 
     // Implement response compression
-    let comression_layer: CompressionLayer = CompressionLayer::new()
+    let compression_layer: CompressionLayer = CompressionLayer::new()
         .br(true)
         .deflate(true)
         .gzip(true)
         .zstd(true);
 
-    Router::new()
+    let router = Router::new()
         // Route to our React app
-        // Mote tha fallback file is the SPA's root index.html, so that the server knows to send all browser click
+        // Note tha fallback file is the SPA's root index.html, so that the server knows to send all browser click
         // to the SPA root app (which will then route from there) vs. looking for that phyiscal file to serve at that URL.
         .nest_service(
             "/",
@@ -85,23 +87,21 @@ fn init_router() -> Router {
         .route("/rando", get(random_number_handler))
         // Route to a random static html file
         .nest_service("/other-index", ServeFile::new("index2.html"))
-        .route(PLAYERS_API, get(api::methods::get_players))
-        .route(
-            format!("{}{}", PLAYERS_API, "/:id").as_str(),
-            get(api::methods::get_player),
-        )
-        .route(PLAYERS_API, post(api::methods::add_player))
         // .layer(middleware::from_fn(logging_middleware))
-        .layer(comression_layer)
+        .layer(RequestDecompressionLayer::new())
+        .layer(compression_layer)
         .layer((
             TraceLayer::new_for_http(),
             // Graceful shutdown will wait for outstanding requests to complete. Add a timeout so
             // requests don't hang forever.
             TimeoutLayer::new(Duration::from_secs(u64::from(
-                configs::utils::get_env_var_as_number("APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION"),
+                configs::get_env_var_as_number("APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION"),
             ))),
         ))
-        .fallback(handler_404)
+        .fallback(handler_404);
+
+    // Now add in all endpoints from our public APIs
+    api::endpoints::add_all_api_endpoints(router)
 }
 
 async fn handler_404() -> impl IntoResponse {

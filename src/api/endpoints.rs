@@ -1,22 +1,21 @@
-// the beauty of this is ::sqlx will analzye at build time if your sql statements below match up with
-// your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
-// run the analysis and then report in "problems/compile errors" in your IDE that yo nee
+//! Exposes the public API endpoints that our service offers. The endpoints use REST naming conventions and
+//! HTTP request methods.
 
-use crate::db;
-use axum::{extract::Path, http::StatusCode, response::IntoResponse, Json};
-use serde::{Deserialize, Serialize};
-use uuid::{self, Uuid};
+/// One cool thing about Rust and the ::sqlx library is at build time it validates your sql statements in this file
+/// match up with your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
+/// run the analysis and make static files avaialble in the .sqlx directory that enables offline (i.e. no database avaialble)
+/// schema validation.
+use crate::api::entities::Player;
+use crate::services::db;
+use axum::{
+    extract::Path,
+    http::StatusCode,
+    response::IntoResponse,
+    routing::{get, post, Router},
+    Json,
+};
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Player {
-    id: Option<Uuid>,
-    number: i32,
-    name: String,
-    username: String,
-    email: Option<String>,
-}
-
-// BEGIN: Player API
+// BEGIN: Players API
 pub const PLAYERS_API: &str = "/api/players";
 
 pub async fn get_players() -> impl IntoResponse {
@@ -24,7 +23,7 @@ pub async fn get_players() -> impl IntoResponse {
         Player,
         "select id, number, name, email, username from player"
     )
-    .fetch_all(db::utils::get_pool())
+    .fetch_all(db::get_pool())
     .await
     {
         Ok(players) => players,
@@ -36,13 +35,13 @@ pub async fn get_players() -> impl IntoResponse {
     (StatusCode::OK, Json(players)).into_response()
 }
 
-pub async fn get_player(Path(id): Path<Uuid>) -> impl IntoResponse {
+pub async fn get_player(Path(id): Path<uuid::Uuid>) -> impl IntoResponse {
     let player: Player = match sqlx::query_as!(
         Player,
         "select id, number, name, email, username from player where id = $1",
         id
     )
-    .fetch_one(db::utils::get_pool())
+    .fetch_one(db::get_pool())
     .await
     {
         Ok(player) => player,
@@ -66,7 +65,7 @@ pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse 
         player_to_add.username,
         player_to_add.email
     )
-    .fetch_one(db::utils::get_pool())
+    .fetch_one(db::get_pool())
     .await
     {
         Ok(new_player) => new_player,
@@ -78,4 +77,16 @@ pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse 
     (StatusCode::CREATED, Json(new_player)).into_response()
 }
 
-// END: Player API
+// END: Players API
+
+/// Add all API endpoints to our App Server's router. This should only be used during App Server initalization.
+pub fn add_all_api_endpoints(router: Router) -> Router {
+    router
+        // Add all Player API endpoints
+        .route(PLAYERS_API, get(get_players))
+        .route(
+            format!("{}{}", PLAYERS_API, "/:id").as_str(),
+            get(get_player),
+        )
+        .route(PLAYERS_API, post(add_player))
+}
