@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::configs::utils::get_env_var_as_number;
+use crate::configs;
 use axum::{
     extract::Query,
     http::{Error, StatusCode},
@@ -97,9 +97,9 @@ fn init_router() -> Router {
             TraceLayer::new_for_http(),
             // Graceful shutdown will wait for outstanding requests to complete. Add a timeout so
             // requests don't hang forever.
-            TimeoutLayer::new(Duration::from_secs(u64::from(get_env_var_as_number(
-                "APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION",
-            )))),
+            TimeoutLayer::new(Duration::from_secs(u64::from(
+                configs::utils::get_env_var_as_number("APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION"),
+            ))),
         ))
         .fallback(handler_404)
 }

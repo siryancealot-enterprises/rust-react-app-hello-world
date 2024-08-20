@@ -13,6 +13,6 @@ sqlx-cli = { version = "0.8.0", default-features = false, features = ["native-tl
 tokio = { version = "1", features = ["full"] }
 tower-http = { version = "0.5.2", features = ["compression-full", "fs", "timeout", "trace"] }
 uuid = { version = "1.10.0", features = ["v4", "serde"] }
-tracing = "0.1.4"
+tracing = "0.1.40"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
