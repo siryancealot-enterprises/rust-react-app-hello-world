@@ -34,11 +34,11 @@ export function PlayerCreateComponent({ onSubmit }: FormProps) {
     event.preventDefault();
     onSubmit(formData);
 
-    // POST TO add_player API
+    // PUT TO add_player API
     const addPlayer = async () => {
       try {
         const response = await fetch(APIConstants.BACKEND_BASE_URL + API_URLS.PLAYER_API, {
-          method: APIConstants.POST,
+          method: APIConstants.PUT,
           headers: {
             'Accept': APIConstants.APPLICATION_JSON_HEADER,
             'Content-Type': APIConstants.APPLICATION_JSON_HEADER,

@@ -101,7 +101,7 @@ fn init_router() -> Router {
         .fallback(handler_404);
 
     // Now add in all endpoints from our public APIs
-    api::endpoints::add_all_api_endpoints(router)
+    api::endpoints::add_all_endpoints(router)
 }
 
 async fn handler_404() -> impl IntoResponse {

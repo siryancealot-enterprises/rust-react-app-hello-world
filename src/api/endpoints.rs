@@ -7,18 +7,12 @@
 /// schema validation.
 use crate::api::entities::Player;
 use crate::services::db;
-use axum::{
-    extract::Path,
-    http::StatusCode,
-    response::IntoResponse,
-    routing::{get, post, Router},
-    Json,
-};
+use axum::{extract::Path, http::StatusCode, response::IntoResponse, routing::Router, Json};
 
 // BEGIN: Players API
-pub const PLAYERS_API: &str = "/api/players";
+const PLAYERS_API: &str = "/api/players";
 
-pub async fn get_players() -> impl IntoResponse {
+async fn get_players() -> impl IntoResponse {
     let players = match sqlx::query_as!(
         Player,
         "select id, number, name, email, username from player"
@@ -35,7 +29,7 @@ pub async fn get_players() -> impl IntoResponse {
     (StatusCode::OK, Json(players)).into_response()
 }
 
-pub async fn get_player(Path(id): Path<uuid::Uuid>) -> impl IntoResponse {
+async fn get_player(Path(id): Path<uuid::Uuid>) -> impl IntoResponse {
     let player: Player = match sqlx::query_as!(
         Player,
         "select id, number, name, email, username from player where id = $1",
@@ -53,7 +47,7 @@ pub async fn get_player(Path(id): Path<uuid::Uuid>) -> impl IntoResponse {
     (StatusCode::OK, Json(player)).into_response()
 }
 
-pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
+async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
     let new_player: Player = match sqlx::query_as!(
         Player,
         r#"INSERT INTO player
@@ -80,13 +74,13 @@ pub async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse 
 // END: Players API
 
 /// Add all API endpoints to our App Server's router. This should only be used during App Server initalization.
-pub fn add_all_api_endpoints(router: Router) -> Router {
+pub fn add_all_endpoints(router: Router) -> Router {
     router
         // Add all Player API endpoints
-        .route(PLAYERS_API, get(get_players))
+        .route(PLAYERS_API, axum::routing::get(get_players))
         .route(
             format!("{}{}", PLAYERS_API, "/:id").as_str(),
-            get(get_player),
+            axum::routing::get(get_player),
         )
-        .route(PLAYERS_API, post(add_player))
+        .route(PLAYERS_API, axum::routing::put(add_player))
 }
