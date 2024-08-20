@@ -5,13 +5,10 @@ use std::time::Duration;
 use crate::api;
 use crate::services::configs;
 use axum::{
-    extract::Query,
     http::{Error, StatusCode},
-    response::{Html, IntoResponse},
-    routing::{get, Router},
+    response::IntoResponse,
+    routing::Router,
 };
-use rand::{thread_rng, Rng};
-use serde::Deserialize;
 use tokio::signal;
 use tower_http::{
     compression::CompressionLayer,
@@ -60,13 +57,6 @@ pub async fn init_app_server() -> Result<(), Error> {
 }
 
 fn init_router() -> Router {
-    // We need to serve from the build directory itself so the relative paths are correct for
-    // the React app files.
-    let binding =
-        std::env::var("REACT_APP_DIST_DIR").expect("REACT_APP_DIST_DIR must be set in .env file.");
-    let react_app_dist_location: &str = binding.as_str();
-    let path_with_index_html = react_app_dist_location.to_string() + "/index.html";
-
     // Implement response compression
     let compression_layer: CompressionLayer = CompressionLayer::new()
         .br(true)
@@ -75,17 +65,22 @@ fn init_router() -> Router {
         .zstd(true);
 
     let router = Router::new()
-        // Route to our React app
-        // Note tha fallback file is the SPA's root index.html, so that the server knows to send all browser click
-        // to the SPA root app (which will then route from there) vs. looking for that phyiscal file to serve at that URL.
+        // Route for serving our Single Page Application (SPA)
+        // Note tha fallback file is the SPA's root index.html, so that this server knows to send all url requests
+        // (excpet where overridden later) to the SPA boostrap file which then handles everything from there.
         .nest_service(
             "/",
-            ServeDir::new(react_app_dist_location)
-                .not_found_service(ServeFile::new(path_with_index_html)),
+            ServeDir::new(
+                // The SPA's build/distribution directory where all the compiled, static files reside
+                std::env::var("SPA_DIST_DIR").expect("SPA_DIST_DIR must be set in .env file."),
+            )
+            .not_found_service(ServeFile::new(
+                // The url for the core SPA bootstraping file
+                std::env::var("SPA_BOOTSTRAP_URL")
+                    .expect("SPA_BOOTSTRAP_URL must be set in .env file."),
+            )),
         )
-        // Route to a random piece of dynamic generated content (simulating an API call/response)
-        .route("/rando", get(random_number_handler))
-        // Route to a random static html file
+        // TODO SWY: Example of a routing to a random static html file (something outside the SPA)
         .nest_service("/other-index", ServeFile::new("index2.html"))
         // .layer(middleware::from_fn(logging_middleware))
         .layer(RequestDecompressionLayer::new())
@@ -109,24 +104,6 @@ async fn handler_404() -> impl IntoResponse {
         StatusCode::NOT_FOUND,
         "Ivalid or malformed URL, please check and try again or report the issue.",
     )
-}
-
-// `Deserialize` need be implemented to use with `Query` extractor.
-#[derive(Debug, Deserialize)]
-struct RangeParameters {
-    start: usize,
-    end: usize,
-}
-
-async fn random_number_handler(Query(range): Query<RangeParameters>) -> Html<String> {
-    // Generate a random number in range parsed from query.
-    let random_number = thread_rng().gen_range(range.start..range.end);
-
-    // Send response in html format.
-    Html(format!(
-        "<h1>Random Number: {}</h1></br><a href='/'>Go Back</a>",
-        random_number
-    ))
 }
 
 // Bind various ways to detect and listen for a shutdown command, which allows the graceful shutdown above.

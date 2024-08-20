@@ -6,7 +6,6 @@ edition = "2021"
 [dependencies]
 axum = { version = "0.7.0" , features = ["tokio", "http1"] }
 dotenv = "0.15.0"
-rand = "0.8.5"
 serde = { version = "1.0.204", features = ["derive"] }
 sqlx = { version = "0.8.0", features = ["postgres", "runtime-tokio-native-tls", "uuid"] }
 sqlx-cli = { version = "0.8.0", default-features = false, features = ["native-tls", "postgres"] }
