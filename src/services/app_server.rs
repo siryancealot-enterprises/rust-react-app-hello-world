@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use crate::api;
 use crate::services::configs;
-use axum::{http::StatusCode, response::IntoResponse, routing::Router};
+use axum::{http, response};
 use tokio::signal;
 use tower_http::{
     compression::CompressionLayer,
@@ -14,26 +14,15 @@ use tower_http::{
     trace::TraceLayer,
 };
 
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-
 /// Initalize an Axum app server with the following features:
 ///
 /// 1. Routes defined to serve the Single Page Application (SPA) static files as well as API endpoints
 /// 2. Response compression
 /// 3. Graceful shutdown (waits up to APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION seconds for in-flight requests to finish)
-/// 4. Basic request and response logging
+/// 4. TODO SWY: Basic request and response logging
 ///
 pub async fn init_app_server() {
-    // Enable tracing.
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "tower_http=debug,axum=trace".into()),
-        )
-        .with(tracing_subscriber::fmt::layer().without_time())
-        .init();
-
-    let app: Router = init_router();
+    let app: axum::Router = init_router();
 
     let listener = tokio::net::TcpListener::bind(
         std::env::var("APP_SERVER_URL").expect("APP_SERVER_URL must be set in .env file."),
@@ -41,10 +30,7 @@ pub async fn init_app_server() {
     .await
     .unwrap();
 
-    println!(
-        "App server listening on: {}",
-        listener.local_addr().unwrap()
-    );
+    tracing::debug!("App server listening on {}", listener.local_addr().unwrap());
 
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
@@ -52,7 +38,7 @@ pub async fn init_app_server() {
         .expect("App server failed to initialize");
 }
 
-fn init_router() -> Router {
+fn init_router() -> axum::Router {
     // Implement response compression
     let compression_layer: CompressionLayer = CompressionLayer::new()
         .br(true)
@@ -60,7 +46,7 @@ fn init_router() -> Router {
         .gzip(true)
         .zstd(true);
 
-    let router = Router::new()
+    let router = axum::Router::new()
         // Route for serving our Single Page Application (SPA)
         // Note tha fallback file is the SPA's root index.html, so that this server knows to send all url requests
         // (excpet where overridden later) to the SPA boostrap file which then handles everything from there.
@@ -78,7 +64,7 @@ fn init_router() -> Router {
         )
         // TODO SWY: Example of a routing to a random static html file (something outside the SPA)
         .nest_service("/other-index", ServeFile::new("index2.html"))
-        // .layer(middleware::from_fn(logging_middleware))
+        // .layer(axum::middleware::from_fn(logging_middleware))
         .layer(RequestDecompressionLayer::new())
         .layer(compression_layer)
         .layer((
@@ -95,9 +81,9 @@ fn init_router() -> Router {
     api::endpoints::add_all_endpoints(router)
 }
 
-async fn handler_404() -> impl IntoResponse {
+async fn handler_404() -> impl response::IntoResponse {
     (
-        StatusCode::NOT_FOUND,
+        http::StatusCode::NOT_FOUND,
         "Ivalid or malformed URL, please check and try again or report the issue.",
     )
 }

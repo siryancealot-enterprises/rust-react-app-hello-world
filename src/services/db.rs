@@ -40,7 +40,7 @@ pub async fn init_db_conn_pool() {
         );
     }
 
-    println!("DB ready for business: {:?}", row.0 > 0);
+    tracing::debug!("DB ready for business: {:?}", row.0 > 0);
 }
 
 // Return the DB connect string from the .env file, priting out the string with the DB password redacted.
@@ -50,7 +50,7 @@ fn get_db_connect_string() -> String {
 
     let connect_string: String = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set.");
     let redacted_connect_string: String = connect_string.replace(password, "<password_redacted>");
-    println!("DB Connect str: {0}", redacted_connect_string);
+    tracing::debug!("DB Connect str: {0}", redacted_connect_string);
 
     connect_string
 }

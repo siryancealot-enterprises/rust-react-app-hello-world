@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = { version = "0.7.0" , features = ["tokio", "http1"] }
+axum = { version = "0.7.0" , features = ["tokio", "http1", "tracing"] }
 dotenv = "0.15.0"
 serde = { version = "1.0.204", features = ["derive"] }
 sqlx = { version = "0.8.0", features = ["postgres", "runtime-tokio-native-tls", "uuid"] }
