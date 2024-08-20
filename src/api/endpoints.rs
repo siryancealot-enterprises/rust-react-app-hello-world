@@ -7,7 +7,7 @@
 /// schema validation.
 use crate::api::resources::Player;
 use crate::services::db;
-use axum::{extract::Path, http::StatusCode, response::IntoResponse, routing::Router, Json};
+use axum::{extract::Path, http::StatusCode, response::IntoResponse, routing, Json};
 
 // BEGIN: Players API
 const PLAYERS_API: &str = "/api/players";
@@ -73,14 +73,30 @@ async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
 
 // END: Players API
 
-/// Add all API endpoints to our App Server's router. This should only be used during App Server initalization.
-pub fn add_all_endpoints(router: Router) -> Router {
-    router
-        // Add all Player API endpoints
-        .route(PLAYERS_API, axum::routing::get(get_players))
-        .route(
-            format!("{}{}", PLAYERS_API, "/:id").as_str(),
-            axum::routing::get(get_player),
-        )
-        .route(PLAYERS_API, axum::routing::put(add_player))
+pub struct ApiEndpoint {
+    pub path: String,
+    pub method_route: routing::MethodRouter,
+}
+
+/// Returns all API endpoints, with proper path and routing::MethodRouter handle
+pub fn get_all_endpoints() -> Vec<ApiEndpoint> {
+    let mut endpoints: Vec<ApiEndpoint> = Vec::new();
+
+    // Player API
+    endpoints.push(ApiEndpoint {
+        path: PLAYERS_API.to_string(),
+        method_route: routing::get(get_players),
+    });
+    endpoints.push(ApiEndpoint {
+        path: format!("{}{}", PLAYERS_API, "/:id"),
+        method_route: routing::get(get_player),
+    });
+    endpoints.push(ApiEndpoint {
+        path: PLAYERS_API.to_string(),
+        method_route: routing::put(add_player),
+    });
+
+    // <Next Entitity> API
+
+    endpoints
 }

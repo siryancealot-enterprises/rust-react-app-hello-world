@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use crate::api;
 use crate::services::configs;
-use axum::{http, response};
+use axum::{http, response, Router};
 use tokio::signal;
 use tower_http::{
     compression::CompressionLayer,
@@ -68,6 +68,8 @@ fn init_router() -> axum::Router {
         .layer(RequestDecompressionLayer::new())
         .layer(compression_layer)
         .layer((
+            // Where request/response tracing/logging is declared
+            // TODO SWY: Figure our why API calls are not logged, the SPA static files are
             TraceLayer::new_for_http(),
             // Graceful shutdown will wait for outstanding requests to complete. Add a timeout so
             // requests don't hang forever.
@@ -78,7 +80,16 @@ fn init_router() -> axum::Router {
         .fallback(handler_404);
 
     // Now add in all endpoints from our public APIs
-    api::endpoints::add_all_endpoints(router)
+    add_api_routes(router)
+}
+
+fn add_api_routes(mut router: Router) -> Router {
+    let endpoints: Vec<api::endpoints::ApiEndpoint> = api::endpoints::get_all_endpoints();
+
+    for endpoint in endpoints {
+        router = router.route(endpoint.path.as_str(), endpoint.method_route);
+    }
+    router
 }
 
 async fn handler_404() -> impl response::IntoResponse {

@@ -15,9 +15,6 @@ const HomePage = () => {
             <Link to={PLAYER_CREATE_URL} >
                 <button>Add a player</button>
             </Link>
-            <Link to={`/rando?start=1&end=1000`} target="_blank" >
-                <button>Generate a random number, eleswhere</button>
-            </Link>
             <Link to={`/bad-url`} target="_blank" >
                 <button>Go to a broken link</button>
             </Link>
