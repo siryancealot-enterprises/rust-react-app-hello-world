@@ -1,4 +1,4 @@
-//! Defines the entities that our public APIs provide.
+//! Defines the REST resources that our public APIs provide.
 
 use serde::{Deserialize, Serialize};
 use uuid::{self, Uuid};

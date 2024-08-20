@@ -1,11 +1,11 @@
 //! Exposes the public API endpoints that our service offers. The endpoints use REST naming conventions and
-//! HTTP request methods.
+//! HTTP request methods to communicate intent.
 
 /// One cool thing about Rust and the ::sqlx library is at build time it validates your sql statements in this file
 /// match up with your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
 /// run the analysis and make static files avaialble in the .sqlx directory that enables offline (i.e. no database avaialble)
 /// schema validation.
-use crate::api::entities::Player;
+use crate::api::resources::Player;
 use crate::services::db;
 use axum::{extract::Path, http::StatusCode, response::IntoResponse, routing::Router, Json};
 
