@@ -21,24 +21,22 @@ use tower_http::{
 /// 3. Graceful shutdown (waits up to APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION seconds for in-flight requests to finish)
 /// 4. TODO SWY: Basic request and response logging
 ///
-pub async fn init_app_server() {
+pub async fn init_app_server() -> Result<(), Box<dyn std::error::Error>> {
     let app: axum::Router = init_router();
 
-    let listener = tokio::net::TcpListener::bind(
-        std::env::var("APP_SERVER_URL").expect("APP_SERVER_URL must be set in .env file."),
-    )
-    .await
-    .unwrap();
+    let listener =
+        tokio::net::TcpListener::bind(configs::get_env_var_or_panic("APP_SERVER_URL")).await?;
 
     tracing::debug!("App server listening on {}", listener.local_addr().unwrap());
 
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
-        .await
-        .expect("App server failed to initialize");
+        .await?;
+
+    Ok(())
 }
 
-fn init_router() -> axum::Router {
+fn init_router() -> Router {
     // Implement response compression
     let compression_layer: CompressionLayer = CompressionLayer::new()
         .br(true)
@@ -54,12 +52,11 @@ fn init_router() -> axum::Router {
             "/",
             ServeDir::new(
                 // The SPA's build/distribution directory where all the compiled, static files reside
-                std::env::var("SPA_DIST_DIR").expect("SPA_DIST_DIR must be set in .env file."),
+                configs::get_env_var_or_panic("SPA_DIST_DIR"),
             )
             .not_found_service(ServeFile::new(
                 // The url for the core SPA bootstraping file
-                std::env::var("SPA_BOOTSTRAP_URL")
-                    .expect("SPA_BOOTSTRAP_URL must be set in .env file."),
+                configs::get_env_var_or_panic("SPA_BOOTSTRAP_URL"),
             )),
         )
         // TODO SWY: Example of a routing to a random static html file (something outside the SPA)
@@ -74,7 +71,9 @@ fn init_router() -> axum::Router {
             // Graceful shutdown will wait for outstanding requests to complete. Add a timeout so
             // requests don't hang forever.
             TimeoutLayer::new(Duration::from_secs(u64::from(
-                configs::get_env_var_as_number("APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION"),
+                configs::get_env_var_as_number_or_panic(
+                    "APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION",
+                ),
             ))),
         ))
         .fallback(handler_404);
