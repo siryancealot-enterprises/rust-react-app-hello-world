@@ -4,10 +4,13 @@ use std::time::Duration;
 
 use crate::api::endpoints;
 use crate::services::configs;
+use axum::http::StatusCode;
 use axum::routing::put;
-use axum::{http, response, routing::get, Router};
+use axum::{response, routing::get, Router};
 use sqlx::Postgres;
-use tokio::signal;
+use tokio::net::TcpListener;
+use tokio::signal::unix::SignalKind;
+use tokio::signal::{self, unix};
 use tower_http::{
     compression::CompressionLayer,
     decompression::RequestDecompressionLayer,
@@ -26,8 +29,7 @@ use tower_http::{
 pub async fn init_app_server(db_pool: sqlx::Pool<Postgres>) -> Result<(), std::io::Error> {
     let app: axum::Router = init_router(db_pool);
 
-    let listener =
-        tokio::net::TcpListener::bind(configs::get_env_var_or_panic("APP_SERVER_URL")).await?;
+    let listener = TcpListener::bind(configs::get_env_var_or_panic("APP_SERVER_URL")).await?;
 
     tracing::debug!("App server listening on {}", listener.local_addr().unwrap());
 
@@ -100,7 +102,7 @@ fn init_router(db_pool: sqlx::Pool<Postgres>) -> Router {
 
 async fn handler_404() -> impl response::IntoResponse {
     (
-        http::StatusCode::NOT_FOUND,
+        StatusCode::NOT_FOUND,
         "Ivalid or malformed URL, please check and try again or report the issue.",
     )
 }
@@ -116,7 +118,7 @@ async fn shutdown_signal() {
 
     #[cfg(unix)]
     let terminate = async {
-        signal::unix::signal(signal::unix::SignalKind::terminate())
+        unix::signal(SignalKind::terminate())
             .expect("failed to install signal handler")
             .recv()
             .await;
