@@ -21,7 +21,7 @@ use tower_http::{
 /// 3. Graceful shutdown (waits up to APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION seconds for in-flight requests to finish)
 /// 4. TODO SWY: Basic request and response logging
 ///
-pub async fn init_app_server() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn init_app_server() -> Result<(), std::io::Error> {
     let app: axum::Router = init_router();
 
     let listener =
