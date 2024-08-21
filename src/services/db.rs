@@ -2,22 +2,17 @@
 use std::time::Duration;
 
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-use tokio::sync::OnceCell;
 
 use crate::services::configs;
-
-// This allows (I believe) a singleton Connectionp Pool that can be shared for the life-time of the applicaitonn.
-// We dole out the pool in get_pool() function below.
-static CONN_POOL: OnceCell<Pool<Postgres>> = OnceCell::const_new();
 
 /// Initalize a DB Conn Pool with with the following features:
 ///  
 /// 1. Pool size of number of connections as defined by DATABASE_MAX_CONNECTIONS in .env file
-/// 2. Connetion acquire timeout
+/// 2. Connection acquire timeout
 /// 3. Prints out the connection string (with password redacted)
 ///
-pub async fn init_db_conn_pool() -> Result<(), Box<dyn std::error::Error>> {
-    let pool = PgPoolOptions::new()
+pub async fn init_db_conn_pool() -> Result<Pool<Postgres>, sqlx::Error> {
+    let pool: Pool<Postgres> = PgPoolOptions::new()
         .max_connections(configs::get_env_var_as_number_or_panic(
             "DATABASE_MAX_CONNECTIONS",
         ))
@@ -32,11 +27,9 @@ pub async fn init_db_conn_pool() -> Result<(), Box<dyn std::error::Error>> {
         .fetch_one(&pool)
         .await?;
 
-    CONN_POOL.set(pool)?;
-
     tracing::debug!("DB ready for business: {:?}", row.0 > 0);
 
-    Ok(())
+    Ok(pool)
 }
 
 // Return the DB connect string from the .env file, priting out the string with the DB password redacted.
@@ -47,12 +40,4 @@ fn get_db_connect_string() -> String {
     tracing::debug!("DB Connect str: {0}", redacted_connect_string);
 
     connect_string
-}
-
-/// Returns the initailzed Database Connection pool which can serve DB connections to use.
-// TODO SWY: does this just hand a DB connection as an effect of the &'static" syntax?  If so, rename.
-pub fn get_pool() -> &'static Pool<Postgres> {
-    return CONN_POOL
-        .get()
-        .expect("ALERT: Don't have an availalbe pool anymore!");
 }

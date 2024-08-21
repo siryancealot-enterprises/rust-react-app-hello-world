@@ -2,9 +2,11 @@
 //
 use std::time::Duration;
 
-use crate::api;
+use crate::api::endpoints;
 use crate::services::configs;
-use axum::{http, response, Router};
+use axum::routing::put;
+use axum::{http, response, routing::get, Router};
+use sqlx::Postgres;
 use tokio::signal;
 use tower_http::{
     compression::CompressionLayer,
@@ -21,8 +23,8 @@ use tower_http::{
 /// 3. Graceful shutdown (waits up to APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION seconds for in-flight requests to finish)
 /// 4. TODO SWY: Basic request and response logging
 ///
-pub async fn init_app_server() -> Result<(), std::io::Error> {
-    let app: axum::Router = init_router();
+pub async fn init_app_server(db_pool: sqlx::Pool<Postgres>) -> Result<(), std::io::Error> {
+    let app: axum::Router = init_router(db_pool);
 
     let listener =
         tokio::net::TcpListener::bind(configs::get_env_var_or_panic("APP_SERVER_URL")).await?;
@@ -36,7 +38,7 @@ pub async fn init_app_server() -> Result<(), std::io::Error> {
     Ok(())
 }
 
-fn init_router() -> Router {
+fn init_router(db_pool: sqlx::Pool<Postgres>) -> Router {
     // Implement response compression
     let compression_layer: CompressionLayer = CompressionLayer::new()
         .br(true)
@@ -44,7 +46,7 @@ fn init_router() -> Router {
         .gzip(true)
         .zstd(true);
 
-    let router = axum::Router::new()
+    axum::Router::new()
         // Route for serving our Single Page Application (SPA)
         // Note tha fallback file is the SPA's root index.html, so that this server knows to send all url requests
         // (excpet where overridden later) to the SPA boostrap file which then handles everything from there.
@@ -59,6 +61,18 @@ fn init_router() -> Router {
                 configs::get_env_var_or_panic("SPA_BOOTSTRAP_URL"),
             )),
         )
+        // *** BEGIN: Add in all endpoints from our public APIs
+        //
+        // TODO SWY: We need to find a way to separate concerns with this section and have the endpoints returned
+        // by ::api::endpoints and then built into routes in this function.
+        .route(endpoints::PLAYERS_API, get(endpoints::get_players))
+        .route(
+            endpoints::build_id_path(endpoints::PLAYERS_API).as_str(),
+            get(endpoints::get_player),
+        )
+        .route(endpoints::PLAYERS_API, put(endpoints::add_player))
+        //
+        // *** END: Add in all endpoints from our public APIs
         // TODO SWY: Example of a routing to a random static html file (something outside the SPA)
         .nest_service("/other-index", ServeFile::new("index2.html"))
         // .layer(axum::middleware::from_fn(logging_middleware))
@@ -76,19 +90,12 @@ fn init_router() -> Router {
                 ),
             ))),
         ))
-        .fallback(handler_404);
-
-    // Now add in all endpoints from our public APIs
-    add_api_routes(router)
-}
-
-fn add_api_routes(mut router: Router) -> Router {
-    let endpoints: Vec<api::endpoints::ApiEndpoint> = api::endpoints::get_all_endpoints();
-
-    for endpoint in endpoints {
-        router = router.route(endpoint.path.as_str(), endpoint.method_route);
-    }
-    router
+        // We add in the DB Conn Pool as the only Router shared state (this is what makes the conn pool available to the method
+        // handlers for our API enddpoints added above. If we want to have other things available as shared state, we
+        // can use a struct and embed this conn pool within that:
+        // see: https://mo8it.com/blog/sqlx-integration-in-axum/#states and https://docs.rs/axum/latest/axum/extract/struct.State.html
+        .with_state(db_pool)
+        .fallback(handler_404)
 }
 
 async fn handler_404() -> impl response::IntoResponse {
@@ -123,13 +130,3 @@ async fn shutdown_signal() {
         _ = terminate => {},
     }
 }
-
-// Basic logging: logs a visit to any of this server's endpoints.
-// Yes, "middleware" is a term in Rust and Axum:
-// "Middleware in Rust refers to the concept of adding additional layers or functionality between different components of a software system,"
-// https://docs.rs/axum/latest/axum/middleware/index.html
-// https://medium.com/@alexeusgr/what-is-middleware-in-rust-43924cad8076
-// async fn logging_middleware(req: Request<Body>, next: Next) -> Response {
-//     println!("Received a request to {}, {}", req.uri(), req.method());
-//     next.run(req).await
-// }

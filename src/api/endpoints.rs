@@ -6,18 +6,31 @@
 /// run the analysis and make static files avaialble in the .sqlx directory that enables offline (i.e. no database avaialble)
 /// schema validation.
 use crate::api::resources::Player;
-use crate::services::db;
-use axum::{extract::Path, http::StatusCode, response::IntoResponse, routing, Json};
+use axum::{
+    extract::{Path, State},
+    http::StatusCode,
+    response::IntoResponse,
+    Json,
+};
+use sqlx::{Pool, Postgres};
+
+// General API constants and utilities
+const ID_PATH: &str = "/:id";
+
+/// Returns a properly formatted path for retrieving a resource by id
+pub fn build_id_path(resource_base_path: &str) -> String {
+    format!("{}{}", resource_base_path, ID_PATH)
+}
 
 // BEGIN: Players API
-const PLAYERS_API: &str = "/api/players";
+pub const PLAYERS_API: &str = "/api/players";
 
-async fn get_players() -> impl IntoResponse {
+pub async fn get_players(State(pool): State<Pool<Postgres>>) -> impl IntoResponse {
     let players = match sqlx::query_as!(
         Player,
         "select id, number, name, email, username from player"
     )
-    .fetch_all(db::get_pool())
+    .fetch_all(&pool)
     .await
     {
         Ok(players) => players,
@@ -29,13 +42,16 @@ async fn get_players() -> impl IntoResponse {
     (StatusCode::OK, Json(players)).into_response()
 }
 
-async fn get_player(Path(id): Path<uuid::Uuid>) -> impl IntoResponse {
+pub async fn get_player(
+    State(pool): State<Pool<Postgres>>,
+    Path(id): Path<uuid::Uuid>,
+) -> impl IntoResponse {
     let player: Player = match sqlx::query_as!(
         Player,
         "select id, number, name, email, username from player where id = $1",
         id
     )
-    .fetch_one(db::get_pool())
+    .fetch_one(&pool)
     .await
     {
         Ok(player) => player,
@@ -47,7 +63,10 @@ async fn get_player(Path(id): Path<uuid::Uuid>) -> impl IntoResponse {
     (StatusCode::OK, Json(player)).into_response()
 }
 
-async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
+pub async fn add_player(
+    State(pool): State<Pool<Postgres>>,
+    Json(player_to_add): Json<Player>,
+) -> impl IntoResponse {
     let new_player: Player = match sqlx::query_as!(
         Player,
         r#"INSERT INTO player
@@ -59,7 +78,7 @@ async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
         player_to_add.username,
         player_to_add.email
     )
-    .fetch_one(db::get_pool())
+    .fetch_one(&pool)
     .await
     {
         Ok(new_player) => new_player,
@@ -72,31 +91,3 @@ async fn add_player(Json(player_to_add): Json<Player>) -> impl IntoResponse {
 }
 
 // END: Players API
-
-pub struct ApiEndpoint {
-    pub path: String,
-    pub method_route: routing::MethodRouter,
-}
-
-/// Returns all API endpoints, with proper path and routing::MethodRouter handle
-pub fn get_all_endpoints() -> Vec<ApiEndpoint> {
-    let mut endpoints: Vec<ApiEndpoint> = Vec::new();
-
-    // Player API
-    endpoints.push(ApiEndpoint {
-        path: PLAYERS_API.to_string(),
-        method_route: routing::get(get_players),
-    });
-    endpoints.push(ApiEndpoint {
-        path: format!("{}{}", PLAYERS_API, "/:id"),
-        method_route: routing::get(get_player),
-    });
-    endpoints.push(ApiEndpoint {
-        path: PLAYERS_API.to_string(),
-        method_route: routing::put(add_player),
-    });
-
-    // <Next Entitity> API
-
-    endpoints
-}

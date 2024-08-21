@@ -1,4 +1,5 @@
 use dotenv::dotenv;
+use sqlx::Postgres;
 mod api;
 mod services;
 
@@ -11,14 +12,17 @@ async fn main() {
     services::tracing::init_tracing();
 
     // Init the DB
-    services::db::init_db_conn_pool()
-        .await
-        .unwrap_or_else(|error| {
-            panic!("Fatal problem initializng the database: {error}");
-        });
+    // For now passing the conn pool around, and specifically using as shared State in our app server below, which seems
+    // to be the common pattern. Considered/considering using as a global shared constant with OnceCell as the backing impl.
+    let db_pool: sqlx::Pool<Postgres> =
+        services::db::init_db_conn_pool()
+            .await
+            .unwrap_or_else(|error| {
+                panic!("Fatal problem initializng the database: {error}");
+            });
 
     // Init the app server
-    services::app_server::init_app_server()
+    services::app_server::init_app_server(db_pool)
         .await
         .unwrap_or_else(|error| {
             panic!("Fatal problem initializng the app server: {error}");
