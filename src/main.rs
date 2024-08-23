@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use sqlx::Postgres;
-mod api;
-mod services;
+
+use ::react_app_hello_world::services;
 
 #[tokio::main]
 async fn main() {
@@ -12,7 +12,7 @@ async fn main() {
     services::tracing::init_tracing();
 
     // Init the DB
-    // For now passing the conn pool around, and specifically using as shared State in our app server below, which seems
+    // For now passing the connpool around, and specifically using as shared State in our app server below, which seems
     // to be the common pattern. Considered/considering using as a global shared constant with OnceCell as the backing impl.
     let db_pool: sqlx::Pool<Postgres> =
         services::db::init_db_conn_pool()
