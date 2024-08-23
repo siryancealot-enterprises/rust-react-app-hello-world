@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::{self, Uuid};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Player {
     pub id: Option<Uuid>,
     pub number: i32,

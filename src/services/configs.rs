@@ -15,3 +15,23 @@ pub fn get_env_var_as_number_or_panic(var_name: &str) -> u32 {
 pub fn get_env_var_or_panic(var_name: &str) -> String {
     env::var(var_name).unwrap_or_else(|_| panic!("{} {} {}", "Missing", var_name, "in .env file."))
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use dotenv::dotenv;
+
+    #[test]
+    #[should_panic(expected = "Missing BLAH in .env file.")]
+    fn configs_validate_get_env_var_or_panic_panics() {
+        dotenv().ok();
+        get_env_var_or_panic("BLAH");
+    }
+
+    #[test]
+    fn configs_validate_get_env_var_or_panic() {
+        dotenv().ok();
+        assert_eq!("postgres", get_env_var_or_panic("DATABASE_USER"));
+    }
+}
