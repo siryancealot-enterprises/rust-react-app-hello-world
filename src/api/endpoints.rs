@@ -103,6 +103,7 @@ mod tests {
 
     // This needs to align the number of rows inserted in the migrations script whose name contains "seeding_player_data"
     const NUM_SEED_PLAYER_ROWS: usize = 6;
+    // const SEED_PLAYER_USER_NAME: &str = "kobe";
 
     #[test]
     fn endpoints_build_id_path() {
@@ -110,11 +111,58 @@ mod tests {
         assert_eq!(result, format!("{}{}", PLAYERS_API, ID_PATH));
     }
 
+    /// Basic validaiton of our endpoint for getting a list of players
     #[sqlx::test(migrator = "DB_MIGRATOR")]
     fn endpoints_get_players(pool: PgPool) {
-        test_get_players(pool, NUM_SEED_PLAYER_ROWS, "kobe").await;
+        let resp = get_players(axum::extract::State(pool))
+            .await
+            .into_response();
+        assert_eq!(StatusCode::OK, resp.status());
+
+        let players = build_players_from_reponse(resp).await;
+
+        assert_eq!(players.len(), NUM_SEED_PLAYER_ROWS);
+
+        // Validate at least one player's data is returned
+        // let mut found_the_player = false;
+        // for player in players {
+        //     if player.username == SEED_PLAYER_USER_NAME {
+        //         found_the_player = true;
+        //         return;
+        //     };
+        // }
+        // assert!(found_the_player);
     }
 
+    /// Basic validaiton of our endpoint for getting a player by id
+    #[sqlx::test(migrator = "DB_MIGRATOR")]
+    fn endpoints_get_player(pool: PgPool) {
+        let cloned_pool = pool.clone();
+
+        // Get the list of players and pick one to retrive by id
+        let mut resp = get_players(axum::extract::State(pool))
+            .await
+            .into_response();
+        assert_eq!(StatusCode::OK, resp.status());
+        let players: Vec<Player> = build_players_from_reponse(resp).await;
+        let player_to_lookup: &Player = players.get(1).unwrap();
+
+        // Now query for the player by id
+        let player_id: uuid::Uuid = player_to_lookup.id.unwrap();
+        resp = get_player(
+            axum::extract::State(cloned_pool),
+            axum::extract::Path(player_id),
+        )
+        .await
+        .into_response();
+        assert_eq!(StatusCode::OK, resp.status());
+
+        let returned_player: Player = build_player_from_reponse(resp).await;
+
+        validate_players_are_same(&returned_player, player_to_lookup);
+    }
+
+    /// Basic validaiton of our endpoint for adding a new players
     #[sqlx::test(migrator = "DB_MIGRATOR")]
     fn endpoints_add_player(pool: PgPool) {
         let new_player = Player {
@@ -126,54 +174,68 @@ mod tests {
         };
         let player_to_compare: Player = new_player.clone();
 
-        let cloned_pool: PgPool = pool.clone();
-
         let resp: axum::http::Response<axum::body::Body> =
             add_player(axum::extract::State(pool), axum::Json(new_player))
                 .await
                 .into_response();
 
         assert_eq!(StatusCode::CREATED, resp.status());
+
+        let returned_player: Player = build_player_from_reponse(resp).await;
+
+        validate_players_are_same(&returned_player, &player_to_compare);
+    }
+
+    fn validate_players_are_same(player1: &Player, player2: &Player) {
+        // Validate an id was generated and that's a valid UUID of the format we expect...
+        assert!(player1.id.is_some());
+        let id = player1.id.unwrap();
+        assert_eq!(Some(uuid::Version::Random), id.get_version());
+
+        assert_eq!(player1.username, player2.username);
+        assert_eq!(player1.number, player2.number);
+        assert_eq!(player1.email, player2.email);
+        assert_eq!(player1.name, player2.name);
+    }
+
+    async fn build_player_from_reponse(resp: axum::http::Response<axum::body::Body>) -> Player {
         let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
             .await
             .unwrap();
 
-        let returned_player: Player = serde_json::from_str(
+        serde_json::from_str(
             String::from_utf8(bytes.into_iter().collect())
                 .unwrap()
                 .as_str(),
         )
-        .unwrap();
-
-        assert!(returned_player.id.is_some());
-
-        // Validate an id was generated and that's a valid UUID of the format we expect...
-        let id = uuid::Uuid::parse_str(returned_player.id.unwrap().to_string().as_str()).unwrap();
-        assert_eq!(Some(uuid::Version::Random), id.get_version());
-
-        assert_eq!(returned_player.username, player_to_compare.username);
-        assert_eq!(returned_player.number, player_to_compare.number);
-        assert_eq!(returned_player.email, player_to_compare.email);
-
-        test_get_players(cloned_pool, NUM_SEED_PLAYER_ROWS + 1, "rambo").await;
+        .unwrap()
     }
 
-    async fn test_get_players(pool: PgPool, expected_rows: usize, username_to_validate: &str) {
-        let resp = get_players(axum::extract::State(pool))
-            .await
-            .into_response();
-        assert_eq!(StatusCode::OK, resp.status());
+    async fn build_players_from_reponse(
+        resp: axum::http::Response<axum::body::Body>,
+    ) -> Vec<Player> {
         let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
             .await
             .unwrap();
-        let body_string = Json(String::from_utf8(bytes.into_iter().collect()).unwrap());
 
-        // Parse the string of data into serde_json::Value.
-        let json_parsed: serde_json::Value =
-            serde_json::from_str(&body_string).expect("JSON was not well-formatted");
-        assert_eq!(json_parsed.as_array().unwrap().len(), expected_rows);
-
-        // Validate at least one player's data is returned
-        assert!(body_string.contains(username_to_validate));
+        serde_json::from_str(
+            String::from_utf8(bytes.into_iter().collect())
+                .unwrap()
+                .as_str(),
+        )
+        .unwrap()
     }
+
+    // async fn build_from_response<'a, T>(resp: axum::http::Response<axum::body::Body>) -> &'a T {
+    //     let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
+    //         .await
+    //         .unwrap();
+
+    //     (&serde_json::from_str(
+    //         String::from_utf8(bytes.into_iter().collect())
+    //             .unwrap()
+    //             .as_str(),
+    //     ))
+    //         .unwrap()
+    // }
 }

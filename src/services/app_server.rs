@@ -40,7 +40,8 @@ pub async fn init_app_server(db_pool: sqlx::Pool<Postgres>) -> Result<(), std::i
     Ok(())
 }
 
-fn init_router(db_pool: sqlx::Pool<Postgres>) -> Router {
+// TODO SWY: This is only public to make it accessible for integrationt tests that need to boot up the app server with axum-test's approach
+pub fn init_router(db_pool: sqlx::Pool<Postgres>) -> Router {
     // Implement response compression
     let compression_layer: CompressionLayer = CompressionLayer::new()
         .br(true)
