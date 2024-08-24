@@ -95,15 +95,14 @@ pub async fn add_player(
 #[cfg(test)]
 mod tests {
 
-    use sqlx::PgPool;
-
-    use crate::DB_MIGRATOR;
-
     use super::*;
+    use crate::DB_MIGRATOR;
+    use sqlx::PgPool;
 
     // This needs to align the number of rows inserted in the migrations script whose name contains "seeding_player_data"
     const NUM_SEED_PLAYER_ROWS: usize = 6;
-    // const SEED_PLAYER_USER_NAME: &str = "kobe";
+    // The name of a Player that's inserted in our original db setup .sql script in the migrations directory
+    const SEED_PLAYER_USER_NAME: &str = "kobe";
 
     #[test]
     fn endpoints_build_id_path() {
@@ -113,30 +112,30 @@ mod tests {
 
     /// Basic validaiton of our endpoint for getting a list of players
     #[sqlx::test(migrator = "DB_MIGRATOR")]
-    fn endpoints_get_players(pool: PgPool) {
+    async fn endpoints_get_players(pool: PgPool) {
         let resp = get_players(axum::extract::State(pool))
             .await
             .into_response();
         assert_eq!(StatusCode::OK, resp.status());
 
-        let players = build_players_from_reponse(resp).await;
+        let players: Vec<Player> = deserialize_api_resource(resp).await;
 
         assert_eq!(players.len(), NUM_SEED_PLAYER_ROWS);
 
-        // Validate at least one player's data is returned
-        // let mut found_the_player = false;
-        // for player in players {
-        //     if player.username == SEED_PLAYER_USER_NAME {
-        //         found_the_player = true;
-        //         return;
-        //     };
-        // }
-        // assert!(found_the_player);
+        // Find an expected player, for a simple validation of the data retruned
+        let mut found_the_player = false;
+        for player in players {
+            if player.username == SEED_PLAYER_USER_NAME {
+                found_the_player = true;
+                break;
+            };
+        }
+        assert!(found_the_player);
     }
 
     /// Basic validaiton of our endpoint for getting a player by id
     #[sqlx::test(migrator = "DB_MIGRATOR")]
-    fn endpoints_get_player(pool: PgPool) {
+    async fn endpoints_get_player(pool: PgPool) {
         let cloned_pool = pool.clone();
 
         // Get the list of players and pick one to retrive by id
@@ -144,7 +143,7 @@ mod tests {
             .await
             .into_response();
         assert_eq!(StatusCode::OK, resp.status());
-        let players: Vec<Player> = build_players_from_reponse(resp).await;
+        let players: Vec<Player> = deserialize_api_resource(resp).await;
         let player_to_lookup: &Player = players.get(1).unwrap();
 
         // Now query for the player by id
@@ -157,14 +156,13 @@ mod tests {
         .into_response();
         assert_eq!(StatusCode::OK, resp.status());
 
-        let returned_player: Player = build_player_from_reponse(resp).await;
-
+        let returned_player: Player = deserialize_api_resource(resp).await;
         validate_players_are_same(&returned_player, player_to_lookup);
     }
 
     /// Basic validaiton of our endpoint for adding a new players
     #[sqlx::test(migrator = "DB_MIGRATOR")]
-    fn endpoints_add_player(pool: PgPool) {
+    async fn endpoints_add_player(pool: PgPool) {
         let new_player = Player {
             id: None,
             number: 31,
@@ -181,9 +179,38 @@ mod tests {
 
         assert_eq!(StatusCode::CREATED, resp.status());
 
-        let returned_player: Player = build_player_from_reponse(resp).await;
-
+        let returned_player: Player = deserialize_api_resource(resp).await;
         validate_players_are_same(&returned_player, &player_to_compare);
+    }
+
+    /// Validates insert fails when missing required field
+    #[sqlx::test(migrator = "DB_MIGRATOR")]
+    async fn endpoints_add_player_missing_data(pool: PgPool) {
+        let player_to_add = Player {
+            id: None,
+            number: 31,
+            username: String::from("rambo"),
+            email: Some(String::from("kurt@lakers.com")),
+            name: String::from("Kurt Rambis"),
+        };
+        match sqlx::query_as!(
+            Player,
+            r#"INSERT INTO player
+            (number, name, email)
+            VALUES ($1, $2, $3)
+            RETURNING id, number, name, username, email"#,
+            player_to_add.number,
+            player_to_add.name,
+            player_to_add.email
+        )
+        .fetch_one(&pool)
+        .await
+        {
+            Ok(_) => panic!("Insert improperly succeeded"),
+            Err(err) => {
+                assert_eq!(err.to_string(), "error returned from database: null value in column \"username\" of relation \"player\" violates not-null constraint");
+            }
+        };
     }
 
     fn validate_players_are_same(player1: &Player, player2: &Player) {
@@ -198,44 +225,13 @@ mod tests {
         assert_eq!(player1.name, player2.name);
     }
 
-    async fn build_player_from_reponse(resp: axum::http::Response<axum::body::Body>) -> Player {
-        let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
-            .await
-            .unwrap();
-
-        serde_json::from_str(
-            String::from_utf8(bytes.into_iter().collect())
-                .unwrap()
-                .as_str(),
-        )
-        .unwrap()
-    }
-
-    async fn build_players_from_reponse(
+    async fn deserialize_api_resource<T: serde::de::DeserializeOwned>(
         resp: axum::http::Response<axum::body::Body>,
-    ) -> Vec<Player> {
+    ) -> T {
         let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
             .await
             .unwrap();
 
-        serde_json::from_str(
-            String::from_utf8(bytes.into_iter().collect())
-                .unwrap()
-                .as_str(),
-        )
-        .unwrap()
+        serde_json::from_slice(&bytes).unwrap()
     }
-
-    // async fn build_from_response<'a, T>(resp: axum::http::Response<axum::body::Body>) -> &'a T {
-    //     let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
-    //         .await
-    //         .unwrap();
-
-    //     (&serde_json::from_str(
-    //         String::from_utf8(bytes.into_iter().collect())
-    //             .unwrap()
-    //             .as_str(),
-    //     ))
-    //         .unwrap()
-    // }
 }
