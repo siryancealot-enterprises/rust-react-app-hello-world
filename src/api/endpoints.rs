@@ -97,6 +97,7 @@ mod tests {
 
     use super::*;
     use crate::DB_MIGRATOR;
+    use pretty_assertions::assert_eq;
     use sqlx::PgPool;
 
     // This needs to align the number of rows inserted in the migrations script whose name contains "seeding_player_data"

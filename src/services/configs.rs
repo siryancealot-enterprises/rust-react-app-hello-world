@@ -21,6 +21,7 @@ mod tests {
 
     use super::*;
     use dotenv::dotenv;
+    use pretty_assertions::assert_eq;
 
     #[test]
     #[should_panic(expected = "Missing BLAH in .env file.")]
