@@ -1,6 +1,6 @@
 # rust-react-app-hello-world
 
-This demonstrates how to use Rust as the single server and runtime needed to serve up a React Single Page Application (SPA) written in TypeScript. 
+This demonstrates how to use Rust as the single server and runtime needed to serve up a React Single Page Application (SPA) written in TypeScript backed by a Postgres DB. 
 
 The SPA talks to APIs on the Rust server, which talks to a Postgres DB. 
 
@@ -9,6 +9,8 @@ We do not use another server for serving the React app (such as Node.js), rather
 We're using Rust's [Axum](https://docs.rs/axum/latest/axum/) web application server framework.
 
 We're using Postgres DB with Rust's [sqlx](https://docs.rs/sqlx/latest/sqlx/) toolkit for client interaction and other DB utilities.
+
+We've added Rust unit and integration tests for this code. 
 
 
 ## How to build 
