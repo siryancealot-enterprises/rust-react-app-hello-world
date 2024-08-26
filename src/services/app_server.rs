@@ -24,7 +24,7 @@ use tower_http::{
 /// 1. Routes defined to serve the Single Page Application (SPA) static files as well as API endpoints
 /// 2. Response compression
 /// 3. Graceful shutdown (waits up to APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION seconds for in-flight requests to finish)
-/// 4. TODO SWY: Basic request and response logging
+/// 4. Basic request and response logging
 ///
 pub async fn init_app_server(db_pool: sqlx::Pool<Postgres>) -> Result<(), std::io::Error> {
     let app: axum::Router = init_router(db_pool);
@@ -40,7 +40,8 @@ pub async fn init_app_server(db_pool: sqlx::Pool<Postgres>) -> Result<(), std::i
     Ok(())
 }
 
-// TODO SWY: This is only public to make it accessible for integrationt tests that need to boot up the app server with axum-test's approach
+/// Initializes a [`axum::routing::Router`] with endpoint routes and other server runtime features
+/// TODO SWY: This is only public to make it accessible for integrationt tests that need to boot up the app server with axum-test's approach
 pub fn init_router(db_pool: sqlx::Pool<Postgres>) -> Router {
     // Implement response compression
     let compression_layer: CompressionLayer = CompressionLayer::new()

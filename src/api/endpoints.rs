@@ -23,8 +23,11 @@ pub fn build_id_path(resource_base_path: &str) -> String {
 }
 
 // BEGIN: Players API
+
+/// Base path for our Player API
 pub const PLAYERS_API: &str = "/api/players";
 
+/// Returns all players
 pub async fn get_players(State(pool): State<Pool<Postgres>>) -> impl IntoResponse {
     let players = match sqlx::query_as!(
         Player,
@@ -42,6 +45,7 @@ pub async fn get_players(State(pool): State<Pool<Postgres>>) -> impl IntoRespons
     (StatusCode::OK, Json(players)).into_response()
 }
 
+/// Returns a specific player by their ID
 pub async fn get_player(
     State(pool): State<Pool<Postgres>>,
     Path(id): Path<uuid::Uuid>,
@@ -63,6 +67,7 @@ pub async fn get_player(
     (StatusCode::OK, Json(player)).into_response()
 }
 
+/// Creates/adds a new player
 pub async fn add_player(
     State(pool): State<Pool<Postgres>>,
     Json(player_to_add): Json<Player>,
