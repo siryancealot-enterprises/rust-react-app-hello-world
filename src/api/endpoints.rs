@@ -123,15 +123,15 @@ mod tests {
 
         assert_eq!(players.len(), NUM_SEED_PLAYER_ROWS);
 
-        // Find an expected player, for a simple validation of the data retruned
-        let mut found_the_player = false;
-        for player in players {
-            if player.username == SEED_PLAYER_USER_NAME {
-                found_the_player = true;
-                break;
-            };
-        }
-        assert!(found_the_player);
+        // Simple validation of the data retruned, find exaclty one instance of the expected player by username.
+        assert_eq!(
+            players
+                .iter()
+                .filter(|p| p.username == SEED_PLAYER_USER_NAME)
+                .collect::<Vec<_>>()
+                .len(),
+            1
+        );
     }
 
     /// Basic validaiton of our endpoint for getting a player by id
@@ -182,6 +182,25 @@ mod tests {
 
         let returned_player: Player = deserialize_api_resource(resp).await;
         validate_players_are_same(&returned_player, &player_to_compare);
+    }
+
+    /// Validates insert fails when duplicate username is used
+    #[sqlx::test(migrator = "DB_MIGRATOR")]
+    async fn endpoints_add_player_dupe_username(pool: PgPool) {
+        let new_player = Player {
+            id: None,
+            number: 31,
+            username: SEED_PLAYER_USER_NAME.to_string(),
+            email: Some(String::from("kurt@lakers.com")),
+            name: String::from("Kurt Rambis"),
+        };
+
+        let resp: axum::http::Response<axum::body::Body> =
+            add_player(axum::extract::State(pool), axum::Json(new_player))
+                .await
+                .into_response();
+
+        assert_eq!(StatusCode::INTERNAL_SERVER_ERROR, resp.status());
     }
 
     /// Validates insert fails when missing required field
