@@ -142,10 +142,8 @@ mod tests {
     /// Basic validaiton of our endpoint for getting a player by id
     #[sqlx::test(migrator = "DB_MIGRATOR")]
     async fn endpoints_get_player(pool: PgPool) {
-        let cloned_pool = pool.clone();
-
         // Get the list of players and pick one to retrive by id
-        let mut resp = get_players(axum::extract::State(pool))
+        let mut resp = get_players(axum::extract::State(pool.clone()))
             .await
             .into_response();
         assert_eq!(StatusCode::OK, resp.status());
@@ -154,12 +152,9 @@ mod tests {
 
         // Now query for the player by id
         let player_id: uuid::Uuid = player_to_lookup.id.unwrap();
-        resp = get_player(
-            axum::extract::State(cloned_pool),
-            axum::extract::Path(player_id),
-        )
-        .await
-        .into_response();
+        resp = get_player(axum::extract::State(pool), axum::extract::Path(player_id))
+            .await
+            .into_response();
         assert_eq!(StatusCode::OK, resp.status());
 
         let returned_player: Player = deserialize_api_resource(resp).await;
