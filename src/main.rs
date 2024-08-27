@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use sqlx::Postgres;
 
-use ::react_app_hello_world::services;
+use ::rust_react_app_hello_world::services;
 
 #[tokio::main]
 async fn main() {

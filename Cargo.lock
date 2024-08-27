@@ -1738,25 +1738,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "react_app_hello_world"
-version = "0.1.0"
-dependencies = [
- "axum",
- "axum-test",
- "dotenv",
- "pretty_assertions",
- "serde",
- "serde_json",
- "sqlx",
- "sqlx-cli",
- "tokio",
- "tower-http",
- "tracing",
- "tracing-subscriber",
- "uuid",
-]
-
-[[package]]
 name = "redox_syscall"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1873,6 +1854,25 @@ dependencies = [
  "mime_guess",
  "rand",
  "thiserror",
+]
+
+[[package]]
+name = "rust_react_app_hello_world"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum-test",
+ "dotenv",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "sqlx-cli",
+ "tokio",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]

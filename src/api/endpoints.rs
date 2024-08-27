@@ -5,7 +5,7 @@
 /// match up with your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
 /// run the analysis and make static files avaialble in the .sqlx directory that enables offline (i.e. no database avaialble)
 /// schema validation.
-use crate::api::resources::Player;
+use crate::resources::Player;
 use axum::{
     extract::{Path, State},
     http::StatusCode,

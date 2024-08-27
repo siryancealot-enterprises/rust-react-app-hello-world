@@ -3,7 +3,7 @@
 //! to show:
 //!     1) how you'd test with our app server
 //!     2) verifies the app server's API Routes and MethodHandlers are setup properly that simulates  external calls to our APIs (maybe there's a better way to do this?)
-use react_app_hello_world::api::{endpoints, resources::Player};
+use rust_react_app_hello_world::api::{endpoints, resources::Player};
 
 mod test_utils;
 
@@ -11,7 +11,7 @@ mod test_utils;
 const NUM_SEED_PLAYER_ROWS: usize = 6;
 
 /// Basic validaiton of our endpoint for getting a list of players
-#[sqlx::test(migrator = "react_app_hello_world::DB_MIGRATOR")]
+#[sqlx::test(migrator = "rust_react_app_hello_world::DB_MIGRATOR")]
 fn api_get_players(pool: sqlx::PgPool) {
     let server = test_utils::get_test_server_with_app(pool);
 
@@ -23,7 +23,7 @@ fn api_get_players(pool: sqlx::PgPool) {
 }
 
 /// Basic validaiton of our endpoint for getting a player by id
-#[sqlx::test(migrator = "react_app_hello_world::DB_MIGRATOR")]
+#[sqlx::test(migrator = "rust_react_app_hello_world::DB_MIGRATOR")]
 fn api_get_player(pool: sqlx::PgPool) {
     let server = test_utils::get_test_server_with_app(pool);
 
@@ -46,7 +46,7 @@ fn api_get_player(pool: sqlx::PgPool) {
 }
 
 /// Basic validaiton of our endpoint for adding a new players
-#[sqlx::test(migrator = "react_app_hello_world::DB_MIGRATOR")]
+#[sqlx::test(migrator = "rust_react_app_hello_world::DB_MIGRATOR")]
 fn api_add_player(pool: sqlx::PgPool) {
     let server = test_utils::get_test_server_with_app(pool);
 
