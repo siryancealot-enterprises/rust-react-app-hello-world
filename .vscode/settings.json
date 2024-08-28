@@ -9,12 +9,13 @@
     "javascript.updateImportsOnFileMove.enabled": "prompt",
     "[typescript]": {
         "editor.inlayHints.enabled": "on",
+        "editor.formatOnSave": true
     },
     "[rust]": {
         "editor.defaultFormatter": "rust-lang.rust-analyzer",
         "editor.formatOnSave": true
     },
-        "[typescriptreact]": {
+    "[typescriptreact]": {
         "editor.formatOnSave": true
     }
 }
