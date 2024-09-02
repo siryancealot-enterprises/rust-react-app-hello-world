@@ -14,8 +14,29 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: lakers
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
-    - uses: actions/checkout@v4
+    - name: Check out repository code
+      uses: actions/checkout@v4
+    - name: Create and see db
+      run: |
+        cargo install --version=0.8.0 sqlx-cli --no-default-features --features postgres
+        sqlx database create
+        sqlx migrate run
     - name: Build
       run: cargo build --verbose
     - name: Run tests
