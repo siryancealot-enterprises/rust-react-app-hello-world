@@ -21,6 +21,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: lakers
           POSTGRES_DB: postgres
+        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -32,12 +33,16 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v4
-    - name: Create and see db
+    - name: Create and seed the database
       run: |
         cargo install --version=0.8.0 sqlx-cli --no-default-features --features postgres
         sqlx database create
         sqlx migrate run
-    - name: Build
-      run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+    - uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --verbose
+    - uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --verbose
