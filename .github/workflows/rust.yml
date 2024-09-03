@@ -1,3 +1,7 @@
+# GitHub Action workflow with the following:
+#    1. Build and run all tests in the Rust repo (havne't included any TypeScript/Node tests yet)
+#    2. Run Rust's code formatting tool (rustfmt), and failing if we find deviations
+#    3. Run Rusts's code linting tool (clippy), and failing if we find any errors **or** warnings.
 name: Rust
 
 on:
@@ -21,8 +25,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: lakers
           POSTGRES_DB: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
+        options: >-     # Set health checks to wait until postgres has started
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -38,11 +41,53 @@ jobs:
         cargo install --version=0.8.0 sqlx-cli --no-default-features --features postgres
         sqlx database create
         sqlx migrate run
-    - uses: actions-rs/cargo@v1
+    - name: Build
+      uses: actions-rs/cargo@v1
       with:
         command: build
         args: --verbose
-    - uses: actions-rs/cargo@v1
+    - name: Run tests
+      uses: actions-rs/cargo@v1
       with:
         command: test
-        args: --verbose
+        args: --verbose 
+      
+  # Use rustfmt to automatically format your Rust code according to the Rust style guidelines
+  rustfmt:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        components: rustfmt
+    # The <cargo fmt -- --check> command checks the code format without making any changes. To automatically format the code and commit 
+    # the changes, we would need additional steps.
+    - name: Run rustfmt
+      run: cargo fmt -- --check
+
+
+  # clippy is a collection of lints to analyze your Rust code
+  clippy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        components: clippy
+
+    # The <cargo clippy -- -D warnings> command treats warnings as errors, failing the build if any are found. 
+    # We can customize the clippy command to suit the project's requirements further if needed.
+    - name: Run clippy
+      run: cargo clippy -- -D warnings
