@@ -74,7 +74,8 @@ jobs:
   # clippy is a collection of lints to analyze your Rust code
   clippy:
     runs-on: ubuntu-latest
-
+    env: 
+      SQLX_OFFLINE: true # Run DB in offline mode  
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
