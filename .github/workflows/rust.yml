@@ -1,5 +1,5 @@
 # GitHub Action workflow with the following:
-#    1. Build and run all tests in the Rust repo (havne't included any TypeScript/Node tests yet)
+#    1. Build and run all tests in the Rust repo (haven't included any TypeScript/Node tests yet)
 #    2. Run Rust's code formatting tool (rustfmt), and failing if we find deviations
 #    3. Run Rusts's code linting tool (clippy), and failing if we find any errors **or** warnings.
 name: Rust
@@ -41,16 +41,13 @@ jobs:
         cargo install --version=0.8.0 sqlx-cli --no-default-features --features postgres
         sqlx database create
         sqlx migrate run
+    - uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+          components: cargo
     - name: Build
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --verbose
+      run: cargo build --verbose
     - name: Run tests
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --verbose 
+      run: cargo test --verbose
       
   # Use rustfmt to automatically format your Rust code according to the Rust style guidelines
   rustfmt:
@@ -58,32 +55,29 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
+    # Ensure rustfmt is installed 
+    - name: Install rustfmt
+      uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
-        profile: minimal
-        toolchain: stable
         components: rustfmt
     # The <cargo fmt -- --check> command checks the code format without making any changes. To automatically format the code and commit 
     # the changes, we would need additional steps.
-    - uses: actions-rs/cargo@v1
-      with:
-        command: fmt
-        args: --all -- --check
+    - name: Run rustfmt
+      run: cargo fmt --all -- --check
 
   # clippy is a collection of lints to analyze your Rust code
   clippy:
     runs-on: ubuntu-latest
-    env: 
-      SQLX_OFFLINE: true # Run DB in offline mode  
+    env:
+      # Use sqlx in offline mode, which avoids having SQL compilation checks require a live DB to compare queries vs. the
+      # schema. It will instead use the generated queries (created via <cargo sqlx prepare>) to validate against in the .sqlx folder.
+      SQLX_OFFLINE: true   
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: Install Rust
-      uses: actions-rs/toolchain@v1
+    - name: Install clippy
+      uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
-        profile: minimal
-        toolchain: stable
         components: clippy
     # The <cargo clippy -- -D warnings> command treats warnings as errors, failing the build if any are found. 
     # We can customize the clippy command to suit the project's requirements further if needed.
