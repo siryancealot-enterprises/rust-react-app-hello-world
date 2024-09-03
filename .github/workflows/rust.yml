@@ -91,5 +91,3 @@ jobs:
       uses: actions-rs/clippy-check@v1
       with:
         args: -- -D warnings
-        env:
-          SQLX_OFFLINE=true
