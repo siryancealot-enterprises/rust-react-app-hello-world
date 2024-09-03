@@ -14,7 +14,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
 
@@ -41,7 +41,6 @@ jobs:
         cargo install --version=0.8.0 sqlx-cli --no-default-features --features postgres
         sqlx database create
         sqlx migrate run
-
     - name: Build
       run: cargo build --verbose
     - name: Run tests
@@ -67,8 +66,8 @@ jobs:
   clippy:
     runs-on: ubuntu-latest
     env:
-      # Use sqlx in offline mode, which avoids having SQL compilation checks require a live DB to compare queries vs. the
-      # schema. It will instead use the generated queries (created via <cargo sqlx prepare>) to validate against in the .sqlx folder.
+      # Use sqlx in offline mode, which avoids compilation needing a live DB to validate SQL queries vs. the actual DB
+      # schema. It will instead use the generated queries (created via <cargo sqlx prepare>) in the .sqlx folder to validate against.
       SQLX_OFFLINE: true   
     steps:
     - name: Checkout code
