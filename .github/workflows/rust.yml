@@ -88,6 +88,4 @@ jobs:
     # The <cargo clippy -- -D warnings> command treats warnings as errors, failing the build if any are found. 
     # We can customize the clippy command to suit the project's requirements further if needed.
     - name: Run clippy
-      uses: actions-rs/clippy-check@v1
-      with:
-        args: -- -D warnings
+      run: cargo clippy -- -D warnings
