@@ -12,3 +12,9 @@ pub struct Player {
     pub username: String,
     pub email: Option<String>,
 }
+
+/// Represents a generic search requeset
+#[derive(Deserialize, Debug)]
+pub struct SearchRequest {
+    pub term: String,
+}

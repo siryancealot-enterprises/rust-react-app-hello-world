@@ -5,8 +5,9 @@ use std::time::Duration;
 use crate::api::endpoints;
 use crate::services::configs;
 use axum::http::StatusCode;
-use axum::routing::put;
+use axum::routing::{post, put};
 use axum::{response, routing::get, Router};
+use meilisearch_sdk::client::Client;
 use sqlx::Postgres;
 use tokio::net::TcpListener;
 use tokio::signal::unix::SignalKind;
@@ -26,8 +27,11 @@ use tower_http::{
 /// 3. Graceful shutdown (waits up to APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION seconds for in-flight requests to finish)
 /// 4. Basic request and response logging
 ///
-pub async fn init_app_server(db_pool: sqlx::Pool<Postgres>) -> Result<(), std::io::Error> {
-    let app: axum::Router = init_router(db_pool);
+pub async fn init_app_server(
+    db_pool: sqlx::Pool<Postgres>,
+    search_client: Client,
+) -> Result<(), std::io::Error> {
+    let app: axum::Router = init_router(db_pool, search_client);
 
     let listener = TcpListener::bind(configs::get_env_var_or_panic("APP_SERVER_URL")).await?;
 
@@ -40,15 +44,27 @@ pub async fn init_app_server(db_pool: sqlx::Pool<Postgres>) -> Result<(), std::i
     Ok(())
 }
 
+/// Contains all shared state the Router will provide the handler of each request
+#[derive(Clone)]
+pub struct AppState {
+    pub db_pool: sqlx::Pool<Postgres>,
+    pub search_client: Client,
+}
+
 /// Initializes a [`axum::routing::Router`] with endpoint routes and other server runtime features
 /// TODO SWY: This is only public to make it accessible for integrationt tests that need to boot up the app server with axum-test's approach
-pub fn init_router(db_pool: sqlx::Pool<Postgres>) -> Router {
+pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Router {
     // Implement response compression
     let compression_layer: CompressionLayer = CompressionLayer::new()
         .br(true)
         .deflate(true)
         .gzip(true)
         .zstd(true);
+
+    let app_state: AppState = AppState {
+        db_pool,
+        search_client,
+    };
 
     axum::Router::new()
         // Route for serving our Single Page Application (SPA)
@@ -65,7 +81,8 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>) -> Router {
                 configs::get_env_var_or_panic("SPA_BOOTSTRAP_URL"),
             )),
         )
-        // *** BEGIN: Add in all endpoints from our public APIs
+        //
+        //*** BEGIN: Add in all endpoints from our public APIs
         //
         // TODO SWY: We need to find a way to separate concerns with this section and have the endpoints returned
         // by ::api::endpoints and then built into routes in this function.
@@ -75,16 +92,20 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>) -> Router {
             get(endpoints::get_player),
         )
         .route(endpoints::PLAYERS_API, put(endpoints::add_player))
+        .route(
+            endpoints::build_player_search_path().as_str(),
+            post(endpoints::search_players),
+        )
         //
         // *** END: Add in all endpoints from our public APIs
-        // TODO SWY: Example of a routing to a random static html file (something outside the SPA)
+        //
+        // Example of a routing to a random static html file (something outside the SPA)
         .nest_service("/other-index", ServeFile::new("index2.html"))
         // .layer(axum::middleware::from_fn(logging_middleware))
         .layer(RequestDecompressionLayer::new())
         .layer(compression_layer)
         .layer((
             // Where request/response tracing/logging is declared
-            // TODO SWY: Figure our why API calls are not logged, the SPA static files are
             TraceLayer::new_for_http(),
             // Graceful shutdown will wait for outstanding requests to complete. Add a timeout so
             // requests don't hang forever.
@@ -94,11 +115,10 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>) -> Router {
                 ),
             ))),
         ))
-        // We add in the DB Conn Pool as the only Router shared state (this is what makes the conn pool available to the method
-        // handlers for our API enddpoints added above. If we want to have other things available as shared state, we
-        // can use a struct and embed this conn pool within that:
+        // We add in the AppState which makes the DB conn pool and Search client (and future things) available to the method
+        // handlers for our enddpoints added above.
         // see: https://mo8it.com/blog/sqlx-integration-in-axum/#states and https://docs.rs/axum/latest/axum/extract/struct.State.html
-        .with_state(db_pool)
+        .with_state(app_state)
         .fallback(handler_404)
 }
 
