@@ -1,9 +1,8 @@
-name: rust-react-app-hello-world
+name: rust-meilisearch-app-hello-world
 
 services:
 
   db:
-    container_name: postgres_server
     image: postgres
     restart: always
     env_file:
@@ -19,4 +18,17 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
-      
+    
+
+  meilisearch:
+      image: 'getmeili/meilisearch:v1.10.1'
+      env_file:
+        - .env
+      environment:
+          MEILI_MASTER_KEY: '${SEARCH_MASTER_KEY}'
+      ports:
+          - '${SEARCH_PORT}:${SEARCH_PORT}'
+      healthcheck:
+          test: set -o pipefail;curl -fsS http://${SEARCH_SERVER_URL}/health | grep -q '{"status":"available"}'
+          retries: 3
+          timeout: 5s

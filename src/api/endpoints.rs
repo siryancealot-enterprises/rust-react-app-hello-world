@@ -97,6 +97,18 @@ pub async fn add_player(
 
 // END: Players API
 
+/// Takes an Axum Response Body, which is assumed to be JSON, and desrializes it back into the JSON-type
+/// the caller expects
+pub async fn deserialize_api_resource<T: serde::de::DeserializeOwned>(
+    resp: axum::http::Response<axum::body::Body>,
+) -> T {
+    let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
+        .await
+        .unwrap();
+
+    serde_json::from_slice(&bytes).unwrap()
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -243,15 +255,5 @@ mod tests {
         assert_eq!(player1.number, player2.number);
         assert_eq!(player1.email, player2.email);
         assert_eq!(player1.name, player2.name);
-    }
-
-    async fn deserialize_api_resource<T: serde::de::DeserializeOwned>(
-        resp: axum::http::Response<axum::body::Body>,
-    ) -> T {
-        let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
-            .await
-            .unwrap();
-
-        serde_json::from_slice(&bytes).unwrap()
     }
 }
