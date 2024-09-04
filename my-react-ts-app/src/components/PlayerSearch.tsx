@@ -31,11 +31,7 @@ export function PlayerSearchComponent({ onSubmit }: FormProps) {
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name } = event.target;
-    // TODO SWY: This line below is to handle "number" types in forms coming across with values as strings,
-    // which JSON.stringify sends over in double quotes, which makes the server side JSON parser throw up. 
-    // see: https://stackoverflow.com/questions/61070803/how-to-handle-number-input-in-typescript
-    const processedValue = event.target.type === "number" && !isNaN(event.target.valueAsNumber) ? event.target.valueAsNumber : event.target.value
-    setFormData({ ...formData, [name]: processedValue });
+    setFormData({ ...formData, [name]: event.target.value });
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

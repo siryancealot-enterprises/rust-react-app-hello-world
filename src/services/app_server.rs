@@ -99,14 +99,13 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Rout
         //
         // *** END: Add in all endpoints from our public APIs
         //
-        // TODO SWY: Example of a routing to a random static html file (something outside the SPA)
+        // Example of a routing to a random static html file (something outside the SPA)
         .nest_service("/other-index", ServeFile::new("index2.html"))
         // .layer(axum::middleware::from_fn(logging_middleware))
         .layer(RequestDecompressionLayer::new())
         .layer(compression_layer)
         .layer((
             // Where request/response tracing/logging is declared
-            // TODO SWY: Figure our why API calls are not logged, the SPA static files are
             TraceLayer::new_for_http(),
             // Graceful shutdown will wait for outstanding requests to complete. Add a timeout so
             // requests don't hang forever.

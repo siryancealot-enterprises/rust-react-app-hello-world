@@ -7,8 +7,8 @@
 //!
 //! As the application grows in scope and schema, you'll need to update this utility accordingly.
 //!
-//! TODO SWY: A production-ized version of this is needed that only focuses on db schema and index creation, with
-//! whatever legitimate/real data seeding needed.
+//! A production-ized version of this will be needed that only focuses on creating db schema and index creation, along with
+//! whatever legitimate/real data seeding is needed.
 //!
 use std::{thread, time};
 
@@ -18,10 +18,13 @@ use meilisearch_sdk::{client::*, errors::Error, indexes::Index, task_info::TaskI
 use rust_react_app_hello_world::{
     endpoints,
     resources::Player,
-    services::{self, app_server::AppState, configs, search},
+    services::{self, app_server::AppState, search},
     DB_MIGRATOR,
 };
 use sqlx::{migrate::MigrateError, Postgres};
+
+// Name that should be in our seed data, which we can test query against...
+const PLAYER_NAME_TO_FIND: &str = "kobe";
 
 #[tokio::main]
 async fn main() {
@@ -63,13 +66,8 @@ async fn database_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(), Mig
 /// Note: when using search for real, we'll rely on a real system for notifications of data insert or change
 /// from whatever the source system is (DB, file service, etc.)
 async fn search_service_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(), Error> {
-    // Create a client
-    let client = Client::new(
-        configs::get_env_var_or_panic("SEARCH_SERVER_URL"),
-        // TODO SWY: Change to use a less priviledged "admin-focused" key
-        Some(configs::get_env_var_or_panic("SEARCH_MASTER_KEY")),
-    )
-    .unwrap();
+    // Create a serach client
+    let client = services::search::get_client()?;
 
     // The index where our Player resource data is stored.
     let players_idx = client.index(search::PLAYER_SEARCH_INDEX);
@@ -86,30 +84,33 @@ async fn search_service_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(
         .expect("Failed creatinng the index filter attribute");
 
     // Insert the Player data into the index
-    let mut insert_task: TaskInfo = seed_player_index(client.clone(), &players_idx, db_pool).await;
+    let insert_task: TaskInfo = seed_player_index(client.clone(), &players_idx, db_pool).await;
 
     // Wait for indexing to finish...
-    // TODO SWY: put some type of timeout to protect infinite spining
+    let indexing_timeout = time::Instant::now().elapsed() + time::Duration::from_secs(30);
     let mut task: tasks::Task;
-    while insert_task.status != "succeeded" {
-        // Give a brief pause so we're not hammering the server
-        tracing::info!("Waiting for Search indexing to complete...:");
-        thread::sleep(time::Duration::from_millis(250));
-
+    loop {
         task = client.get_task(insert_task.clone()).await?;
         if task.is_success() {
-            insert_task.status = "succeeded".to_string();
             break;
         } else if task.is_failure() {
             panic!("error seeding serach index with data")
+        } else if time::Instant::now().elapsed() >= indexing_timeout {
+            panic!(
+                "timeout reached seeding serach index with data: {}",
+                indexing_timeout.as_secs()
+            )
         }
+        // Give a brief pause so we're not hammering the server
+        tracing::info!("Waiting for Search indexing to complete...:");
+        thread::sleep(time::Duration::from_millis(250));
     }
 
     // Run a test serach to ensure data was loaded and indexed (and hence available) ...
     let search_results = client
         .index(search::PLAYER_SEARCH_INDEX)
         .search()
-        .with_query("kobe")
+        .with_query(PLAYER_NAME_TO_FIND)
         .execute::<Player>()
         .await
         .unwrap()

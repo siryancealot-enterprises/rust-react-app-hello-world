@@ -1,8 +1,8 @@
 # rust-react-app-hello-world
 
-This demonstrates how to use Rust as the single server and runtime needed to serve up a React Single Page Application (SPA) written in TypeScript backed by a Postgres DB. 
+This demonstrates how to use Rust as the single server and runtime needed to serve up a React Single Page Application (SPA) written in TypeScript backed by a Postgres DB and [meilisearch](https://www.meilisearch.com/) search service. 
 
-The SPA talks to APIs on the Rust server, which talks to a Postgres DB. 
+The SPA talks to APIs on the Rust server, which talks to the Postgres DB or Search service. 
 
 We do not use another server for serving the React app (such as Node.js), rather the single Rust server serves up the statically generated React application files to the requesting client. We still use Node to compile the React SPA and generate its static files. 
 
@@ -10,7 +10,11 @@ We're using Rust's [Axum](https://docs.rs/axum/latest/axum/) web application ser
 
 We're using Postgres DB with Rust's [sqlx](https://docs.rs/sqlx/latest/sqlx/) toolkit for client interaction and other DB utilities.
 
+We're using meilisearch's [Rust SDK](https://github.com/meilisearch/meilisearch-rust).
+
 We've added Rust unit and integration tests for this code. 
+
+This repo relies on Docker Desktop and Docker Compose (see compose.yaml in the project's base directory) to easily automate the initalization and setup of the database and search services the application relies on.  
 
 
 ## How to build 
