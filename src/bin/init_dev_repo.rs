@@ -18,7 +18,7 @@ use meilisearch_sdk::{client::*, errors::Error, indexes::Index, task_info::TaskI
 use rust_react_app_hello_world::{
     endpoints,
     resources::Player,
-    services::{self, configs},
+    services::{self, app_server::AppState, configs},
     DB_MIGRATOR,
 };
 use sqlx::{migrate::MigrateError, Postgres};
@@ -86,7 +86,7 @@ async fn search_service_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(
         .expect("Failed creatinng the index filter attribute");
 
     // Insert the Player data into the index
-    let insert_task: TaskInfo = seed_player_index(&players_idx, db_pool).await;
+    let insert_task: TaskInfo = seed_player_index(client.clone(), &players_idx, db_pool).await;
 
     // Wait for indexing to finish...
     // TODO SWY: put some type of timeout to protect infinite spining
@@ -123,10 +123,17 @@ async fn search_service_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(
 }
 
 /// Read in all Players from the DB and insert them in bulk into the Search index
-async fn seed_player_index(players_idx: &Index, db_pool: sqlx::Pool<Postgres>) -> TaskInfo {
-    let resp = endpoints::get_players(axum::extract::State(db_pool))
-        .await
-        .into_response();
+async fn seed_player_index(
+    search_client: Client,
+    players_idx: &Index,
+    db_pool: sqlx::Pool<Postgres>,
+) -> TaskInfo {
+    let resp = endpoints::get_players(axum::extract::State(AppState {
+        db_pool,
+        search_client,
+    }))
+    .await
+    .into_response();
     let players: Vec<Player> = endpoints::deserialize_api_resource(resp).await;
 
     players_idx

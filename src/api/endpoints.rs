@@ -5,14 +5,13 @@
 /// match up with your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
 /// run the analysis and make static files avaialble in the .sqlx directory that enables offline (i.e. no database avaialble)
 /// schema validation.
-use crate::resources::Player;
+use crate::{resources::Player, services::app_server::AppState};
 use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::IntoResponse,
     Json,
 };
-use sqlx::{Pool, Postgres};
 
 // General API constants and utilities
 const ID_PATH: &str = "/:id";
@@ -28,12 +27,12 @@ pub fn build_id_path(resource_base_path: &str) -> String {
 pub const PLAYERS_API: &str = "/api/players";
 
 /// Returns all players
-pub async fn get_players(State(pool): State<Pool<Postgres>>) -> impl IntoResponse {
+pub async fn get_players(State(app_state): State<AppState>) -> impl IntoResponse {
     let players = match sqlx::query_as!(
         Player,
         "select id, number, name, email, username from player"
     )
-    .fetch_all(&pool)
+    .fetch_all(&app_state.db_pool)
     .await
     {
         Ok(players) => players,
@@ -47,7 +46,7 @@ pub async fn get_players(State(pool): State<Pool<Postgres>>) -> impl IntoRespons
 
 /// Returns a specific player by their ID
 pub async fn get_player(
-    State(pool): State<Pool<Postgres>>,
+    State(app_state): State<AppState>,
     Path(id): Path<uuid::Uuid>,
 ) -> impl IntoResponse {
     let player: Player = match sqlx::query_as!(
@@ -55,7 +54,7 @@ pub async fn get_player(
         "select id, number, name, email, username from player where id = $1",
         id
     )
-    .fetch_one(&pool)
+    .fetch_one(&app_state.db_pool)
     .await
     {
         Ok(player) => player,
@@ -69,7 +68,7 @@ pub async fn get_player(
 
 /// Creates/adds a new player
 pub async fn add_player(
-    State(pool): State<Pool<Postgres>>,
+    State(app_state): State<AppState>,
     Json(player_to_add): Json<Player>,
 ) -> impl IntoResponse {
     let new_player: Player = match sqlx::query_as!(
@@ -83,7 +82,7 @@ pub async fn add_player(
         player_to_add.username,
         player_to_add.email
     )
-    .fetch_one(&pool)
+    .fetch_one(&app_state.db_pool)
     .await
     {
         Ok(new_player) => new_player,
@@ -113,7 +112,7 @@ pub async fn deserialize_api_resource<T: serde::de::DeserializeOwned>(
 mod tests {
 
     use super::*;
-    use crate::DB_MIGRATOR;
+    use crate::{services::search::get_test_search_client, DB_MIGRATOR};
     use pretty_assertions::assert_eq;
     use sqlx::PgPool;
 
@@ -121,6 +120,13 @@ mod tests {
     const NUM_SEED_PLAYER_ROWS: usize = 6;
     // The name of a Player that's inserted in our original db setup .sql script in the migrations directory
     const SEED_PLAYER_USER_NAME: &str = "kobe";
+
+    fn build_app_state(db_pool: PgPool) -> axum::extract::State<AppState> {
+        axum::extract::State(AppState {
+            db_pool,
+            search_client: get_test_search_client(),
+        })
+    }
 
     #[test]
     fn endpoints_build_id_path() {
@@ -131,9 +137,7 @@ mod tests {
     /// Basic validaiton of our endpoint for getting a list of players
     #[sqlx::test(migrator = "DB_MIGRATOR")]
     async fn endpoints_get_players(pool: PgPool) {
-        let resp = get_players(axum::extract::State(pool))
-            .await
-            .into_response();
+        let resp = get_players(build_app_state(pool)).await.into_response();
         assert_eq!(StatusCode::OK, resp.status());
 
         let players: Vec<Player> = deserialize_api_resource(resp).await;
@@ -155,7 +159,7 @@ mod tests {
     #[sqlx::test(migrator = "DB_MIGRATOR")]
     async fn endpoints_get_player(pool: PgPool) {
         // Get the list of players and pick one to retrive by id
-        let mut resp = get_players(axum::extract::State(pool.clone()))
+        let mut resp = get_players(build_app_state(pool.clone()))
             .await
             .into_response();
         assert_eq!(StatusCode::OK, resp.status());
@@ -164,7 +168,7 @@ mod tests {
 
         // Now query for the player by id
         let player_id: uuid::Uuid = player_to_lookup.id.unwrap();
-        resp = get_player(axum::extract::State(pool), axum::extract::Path(player_id))
+        resp = get_player(build_app_state(pool), axum::extract::Path(player_id))
             .await
             .into_response();
         assert_eq!(StatusCode::OK, resp.status());
@@ -186,7 +190,7 @@ mod tests {
         let player_to_compare: Player = new_player.clone();
 
         let resp: axum::http::Response<axum::body::Body> =
-            add_player(axum::extract::State(pool), axum::Json(new_player))
+            add_player(build_app_state(pool), axum::Json(new_player))
                 .await
                 .into_response();
 
@@ -208,7 +212,7 @@ mod tests {
         };
 
         let resp: axum::http::Response<axum::body::Body> =
-            add_player(axum::extract::State(pool), axum::Json(new_player))
+            add_player(build_app_state(pool.clone()), axum::Json(new_player))
                 .await
                 .into_response();
 

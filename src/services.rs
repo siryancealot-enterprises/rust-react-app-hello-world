@@ -2,4 +2,5 @@
 pub mod app_server;
 pub mod configs;
 pub mod db;
+pub mod search;
 pub mod tracing;
