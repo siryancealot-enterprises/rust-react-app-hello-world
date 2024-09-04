@@ -6,15 +6,21 @@ The SPA talks to APIs on the Rust server, which talks to the Postgres DB or Sear
 
 We do not use another server for serving the React app (such as Node.js), rather the single Rust server serves up the statically generated React application files to the requesting client. We still use Node to compile the React SPA and generate its static files. 
 
-We're using Rust's [Axum](https://docs.rs/axum/latest/axum/) web application server framework.
+### Key technologies and libraries used:
+* Rust's [Axum](https://docs.rs/axum/latest/axum/) web application server framework
+* Postgres DB with Rust's [sqlx](https://docs.rs/sqlx/latest/sqlx/) toolkit for client interaction and other DB utilities
+* Meilisearch's with its [Rust SDK](https://github.com/meilisearch/meilisearch-rust)
+* Docker [Desktop](https://www.docker.com/products/docker-desktop/) and [Compose](https://docs.docker.com/compose/)
 
-We're using Postgres DB with Rust's [sqlx](https://docs.rs/sqlx/latest/sqlx/) toolkit for client interaction and other DB utilities.
-
-We're using meilisearch's [Rust SDK](https://github.com/meilisearch/meilisearch-rust).
-
-We've added Rust unit and integration tests for this code. 
-
-This repo relies on Docker Desktop and Docker Compose (see compose.yaml in the project's base directory) to easily automate the initalization and setup of the database and search services the application relies on.  
+### Some best practices implemented:
+* Added Rust unit and integration tests for most Rust code
+* A basic GitHub workflow defined to start our core services, run tests, run Rust's formatter (rustfmt), and run Rust's linter (Clippy)
+* The most strict linting and formatting enabled for Rust and TypeScript code configured in VSCode and GitHub Action workflow
+* Basic logging and tracing enabled
+* Proper environment variable support (staring with .env file at project Root)
+* Automated DB schema creation and upgrade script execution
+* Using Docker Desktop and Docker Compose (using the compose.yaml in the project's base directory) to easily automate the initalization and setup of the database and search services the application relies on. You can still roll your own Postgres and meilisearch local setup, but why?
+* And many more (i.e. db connection pooling, etc. etc.)
 
 
 ## How to build 

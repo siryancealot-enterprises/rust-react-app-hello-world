@@ -15,7 +15,7 @@ pub const PLAYER_SEARCH_INDEX: &str = "players";
 ///
 /// Right now, this runs with the Master key, but eventually we should make clients that only run with
 /// either the "Admin API key" or the general "Search API key":
-/// https://www.meilisearch.com/docs/learn/security/differences_master_api_keys
+/// <https://www.meilisearch.com/docs/learn/security/differences_master_api_keys>
 pub fn get_client() -> Result<Client, Error> {
     Client::new(
         configs::get_env_var_or_panic("SEARCH_SERVER_URL"),
