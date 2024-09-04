@@ -16,6 +16,8 @@ use axum::{
     Json,
 };
 
+use super::resources::SearchRequest;
+
 // General API constants and utilities
 const ID_PATH: &str = "/:id";
 
@@ -102,19 +104,18 @@ pub async fn add_player(
 // BEGIN: Search API
 
 /// Base path for our Player API
-pub const SEARCH_API: &str = "/api/search";
-const SEARCH_PATH: &str = "/:term";
+pub const SEARCH_API: &str = "/search";
 
 /// Returns a properly formatted path for retrieving a resource by id
-pub fn build_search_path() -> String {
-    format!("{}{}", SEARCH_API, SEARCH_PATH)
+pub fn build_player_search_path() -> String {
+    format!("{}{}", PLAYERS_API, SEARCH_API)
 }
 
 pub async fn search_players(
     State(app_state): State<AppState>,
-    Path(term): Path<String>,
+    Json(term): Json<SearchRequest>,
 ) -> impl IntoResponse {
-    let players = search::player_search(app_state.search_client, &term).await;
+    let players = search::player_search(app_state.search_client, &term.term).await;
 
     (StatusCode::OK, Json(players)).into_response()
 }

@@ -5,7 +5,7 @@ use std::time::Duration;
 use crate::api::endpoints;
 use crate::services::configs;
 use axum::http::StatusCode;
-use axum::routing::put;
+use axum::routing::{post, put};
 use axum::{response, routing::get, Router};
 use meilisearch_sdk::client::Client;
 use sqlx::Postgres;
@@ -93,8 +93,8 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Rout
         )
         .route(endpoints::PLAYERS_API, put(endpoints::add_player))
         .route(
-            endpoints::build_search_path().as_str(),
-            get(endpoints::search_players),
+            endpoints::build_player_search_path().as_str(),
+            post(endpoints::search_players),
         )
         //
         // *** END: Add in all endpoints from our public APIs

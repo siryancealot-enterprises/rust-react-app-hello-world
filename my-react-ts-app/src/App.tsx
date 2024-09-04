@@ -5,7 +5,7 @@ import PageNotFoundPage from './pages/PageNotFoundPage';
 import PlayerCreatePage, { PLAYER_CREATE_URL } from './pages/PlayerCreatePage';
 import PlayerListPage, { PLAYER_LIST_URL } from './pages/PlayerListPage';
 import PlayerPage, { PLAYER_DETAIL_URL_FORMAT } from './pages/PlayerPage';
-
+import PlayerSearchPage, { PLAYER_SEARCH_URL } from './pages/PlayerSearchPage';
 
 function App() {
   return (
@@ -15,6 +15,7 @@ function App() {
         <Route path={PLAYER_DETAIL_URL_FORMAT} Component={PlayerPage} />
         <Route path={PLAYER_LIST_URL} Component={PlayerListPage} />
         <Route path={PLAYER_CREATE_URL} Component={PlayerCreatePage} />
+        <Route path={PLAYER_SEARCH_URL} Component={PlayerSearchPage} />
         <Route path="*" Component={PageNotFoundPage} />
       </Routes>
     </>
