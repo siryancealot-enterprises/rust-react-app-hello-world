@@ -81,7 +81,8 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Rout
                 configs::get_env_var_or_panic("SPA_BOOTSTRAP_URL"),
             )),
         )
-        // *** BEGIN: Add in all endpoints from our public APIs
+        //
+        //*** BEGIN: Add in all endpoints from our public APIs
         //
         // TODO SWY: We need to find a way to separate concerns with this section and have the endpoints returned
         // by ::api::endpoints and then built into routes in this function.
@@ -91,9 +92,13 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Rout
             get(endpoints::get_player),
         )
         .route(endpoints::PLAYERS_API, put(endpoints::add_player))
-        .route(endpoints::SEARCH_API, get(endpoints::search))
+        .route(
+            endpoints::build_search_path().as_str(),
+            get(endpoints::search_players),
+        )
         //
         // *** END: Add in all endpoints from our public APIs
+        //
         // TODO SWY: Example of a routing to a random static html file (something outside the SPA)
         .nest_service("/other-index", ServeFile::new("index2.html"))
         // .layer(axum::middleware::from_fn(logging_middleware))

@@ -103,9 +103,18 @@ pub async fn add_player(
 
 /// Base path for our Player API
 pub const SEARCH_API: &str = "/api/search";
+const SEARCH_PATH: &str = "/:term";
 
-pub async fn search(State(app_state): State<AppState>) -> impl IntoResponse {
-    let players = search::player_search(app_state.search_client).await;
+/// Returns a properly formatted path for retrieving a resource by id
+pub fn build_search_path() -> String {
+    format!("{}{}", SEARCH_API, SEARCH_PATH)
+}
+
+pub async fn search_players(
+    State(app_state): State<AppState>,
+    Path(term): Path<String>,
+) -> impl IntoResponse {
+    let players = search::player_search(app_state.search_client, &term).await;
 
     (StatusCode::OK, Json(players)).into_response()
 }

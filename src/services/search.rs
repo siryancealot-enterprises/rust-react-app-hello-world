@@ -14,11 +14,11 @@ pub fn get_client() -> Result<Client, Error> {
     )
 }
 
-pub async fn player_search(search_client: Client) -> Vec<Player> {
+pub async fn player_search(search_client: Client, term: &str) -> Vec<Player> {
     let search_results = search_client
         .index(PLAYER_SEARCH_INDEX)
         .search()
-        // .with_query("kobe")
+        .with_query(term)
         .execute::<Player>()
         .await
         .unwrap()
