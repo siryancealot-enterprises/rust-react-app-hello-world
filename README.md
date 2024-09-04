@@ -27,7 +27,7 @@ The instructions below assume you have the following installed locally:
 5. Docker Desktop (v4.32+)
 6. (optional, but highly recommended) VSCode (v1.90+ with "rust-analyzer" and "ESLint" extensions installed)
 
-Note: Postgres and meilisearch will automationcally be installed and initalized by our automated local build process using Docker Compose. 
+Note: Postgres and meilisearch will automationcally be installed and initialized by our automated local build process using Docker Compose. 
 
 See the [Dev Environment Setup](https://docs.google.com/document/d/1XNp3Rvjv013czinhsvlJ8TVzIqlS23XuRvU68ydVp28/edit#heading=h.nmiyh3e307cw) section for instructions on how to install any of the above.
 
