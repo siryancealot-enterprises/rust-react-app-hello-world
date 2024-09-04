@@ -91,6 +91,7 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Rout
             get(endpoints::get_player),
         )
         .route(endpoints::PLAYERS_API, put(endpoints::add_player))
+        .route(endpoints::SEARCH_API, get(endpoints::search))
         //
         // *** END: Add in all endpoints from our public APIs
         // TODO SWY: Example of a routing to a random static html file (something outside the SPA)

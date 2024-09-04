@@ -18,7 +18,7 @@ use meilisearch_sdk::{client::*, errors::Error, indexes::Index, task_info::TaskI
 use rust_react_app_hello_world::{
     endpoints,
     resources::Player,
-    services::{self, app_server::AppState, configs},
+    services::{self, app_server::AppState, configs, search},
     DB_MIGRATOR,
 };
 use sqlx::{migrate::MigrateError, Postgres};
@@ -72,7 +72,7 @@ async fn search_service_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(
     .unwrap();
 
     // The index where our Player resource data is stored.
-    let players_idx = client.index("players");
+    let players_idx = client.index(search::PLAYER_SEARCH_INDEX);
 
     // If we want to enable filtering, we must add the attributes to the filterableAttributes index setting.
     // You only need to perform this operation once.
@@ -80,7 +80,7 @@ async fn search_service_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(
     // dataset, this might take time. You can track the process using the returned Tasks.
     let filterable_attributes = ["id", "name"];
     client
-        .index("players")
+        .index(search::PLAYER_SEARCH_INDEX)
         .set_filterable_attributes(&filterable_attributes)
         .await
         .expect("Failed creatinng the index filter attribute");
@@ -108,7 +108,7 @@ async fn search_service_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(
 
     // Run a test serach to ensure data was loaded and indexed (and hence available) ...
     let search_results = client
-        .index("players")
+        .index(search::PLAYER_SEARCH_INDEX)
         .search()
         .with_query("kobe")
         .execute::<Player>()

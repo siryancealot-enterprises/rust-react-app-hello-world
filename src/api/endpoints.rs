@@ -5,7 +5,10 @@
 /// match up with your database schema. Every time you add new SQL queries, you need to run "cargo sqlx prepare" which will
 /// run the analysis and make static files avaialble in the .sqlx directory that enables offline (i.e. no database avaialble)
 /// schema validation.
-use crate::{resources::Player, services::app_server::AppState};
+use crate::{
+    resources::Player,
+    services::{app_server::AppState, search},
+};
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -95,6 +98,19 @@ pub async fn add_player(
 }
 
 // END: Players API
+
+// BEGIN: Search API
+
+/// Base path for our Player API
+pub const SEARCH_API: &str = "/api/search";
+
+pub async fn search(State(app_state): State<AppState>) -> impl IntoResponse {
+    let players = search::player_search(app_state.search_client).await;
+
+    (StatusCode::OK, Json(players)).into_response()
+}
+
+// END: Search API
 
 /// Takes an Axum Response Body, which is assumed to be JSON, and desrializes it back into the JSON-type
 /// the caller expects
