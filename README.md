@@ -21,11 +21,13 @@ This repo relies on Docker Desktop and Docker Compose (see compose.yaml in the p
 
 ### Requirements
 The instructions below assume you have the following installed locally: 
-1. Git 
+1. Git (v2.39.3+)
 2. Rust (v1.80+) 
 3. Node (v20.16.0+)
-4. Postgres (v16.4+) running and available (via Docker or otherwise)
-5. (optional) VSCode (v1.90+ with "rust-analyzer" and "ESLint" extensions installed) 
+5. Docker Desktop (v4.32+)
+6. (optional, but highly recommended) VSCode (v1.90+ with "rust-analyzer" and "ESLint" extensions installed)
+
+Note: Postgres and meilisearch will automationcally be installed and initalized by our automated local build process using Docker Compose. 
 
 See the [Dev Environment Setup](https://docs.google.com/document/d/1XNp3Rvjv013czinhsvlJ8TVzIqlS23XuRvU68ydVp28/edit#heading=h.nmiyh3e307cw) section for instructions on how to install any of the above.
 
