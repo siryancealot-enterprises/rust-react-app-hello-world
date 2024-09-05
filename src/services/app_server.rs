@@ -7,6 +7,7 @@ use crate::services::configs;
 use axum::http::StatusCode;
 use axum::routing::{post, put};
 use axum::{response, routing::get, Router};
+use colored::Colorize;
 use meilisearch_sdk::client::Client;
 use sqlx::Postgres;
 use tokio::net::TcpListener;
@@ -35,7 +36,17 @@ pub async fn init_app_server(
 
     let listener = TcpListener::bind(configs::get_env_var_or_panic("APP_SERVER_URL")).await?;
 
-    tracing::debug!("App server listening on {}", listener.local_addr().unwrap());
+    tracing::debug!(
+        "{} {}",
+        "App server listening on".green().bold(),
+        listener
+            .local_addr()
+            .unwrap()
+            .to_string()
+            .green()
+            .bold()
+            .underline()
+    );
 
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())

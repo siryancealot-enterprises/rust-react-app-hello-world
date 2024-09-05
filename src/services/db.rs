@@ -1,6 +1,7 @@
 //! Provides utilities to initialize usage of the database and provide functions to interact with it.
 use std::time::Duration;
 
+use colored::Colorize;
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 use crate::services::configs;
@@ -22,12 +23,15 @@ pub async fn init_db_conn_pool() -> Result<Pool<Postgres>, sqlx::Error> {
         .connect(get_db_connect_string().as_str())
         .await?;
 
-    let row: (i64,) = sqlx::query_as("SELECT $1")
+    sqlx::query_as("SELECT $1")
         .bind(150_i64)
         .fetch_one(&pool)
         .await?;
 
-    tracing::debug!("DB ready for business: {:?}", row.0 > 0);
+    tracing::debug!(
+        "{}",
+        "Database connection pool created and ready for requests".green()
+    );
 
     Ok(pool)
 }

@@ -1,4 +1,5 @@
 //! A utility for initalizing repos on developer or test environments.
+use colored::Colorize;
 use dotenv::dotenv;
 use rust_react_app_hello_world::{
     environment_utils::dev_and_test_utils,
@@ -33,4 +34,11 @@ async fn main() {
         .unwrap_or_else(|error| {
             panic!("Fatal problem initializng the search service: {error}");
         });
+
+    tracing::debug!(
+        "{}",
+        "Core services successfully configured and ready!"
+            .green()
+            .underline()
+    );
 }

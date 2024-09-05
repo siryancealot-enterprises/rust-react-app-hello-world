@@ -10,9 +10,7 @@ export const APIConstants = Object.freeze({
   PATCH: 'PATCH',
   DELETE: 'DELETE',
   APPLICATION_JSON_HEADER: 'application/json',
-  // eslint-disable-next-line no-undef
   BACKEND_BASE_URL: process.env.REACT_APP_BACKEND_BASE_URL, // This is loaded from the .env file at React project root
-  // ...
 })
 
 export const API_URLS = Object.freeze({

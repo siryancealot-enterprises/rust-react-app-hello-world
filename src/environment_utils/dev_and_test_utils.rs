@@ -15,6 +15,7 @@
 use std::time;
 
 use axum::response::IntoResponse;
+use colored::Colorize;
 use meilisearch_sdk::{client::*, errors::Error, indexes::Index, task_info::TaskInfo};
 use sqlx::{migrate::MigrateError, PgPool, Postgres};
 
@@ -75,7 +76,10 @@ pub async fn search_service_init_and_seed(
         .hits;
 
     assert!(!search_results.is_empty());
-    println!("{:?}", search_results);
+    tracing::debug!(
+        "{}",
+        "Search service successfully configured and sample data loadedd!".green()
+    );
 
     Ok(client)
 }
@@ -102,7 +106,10 @@ async fn seed_player_index(
 
 /// Runs the sqlx::migrate::Migrator, which creates the database's initial schema and seeds with some sample data
 pub async fn database_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(), MigrateError> {
-    // let migrator = Migrator::new(path::Path::new("./migrations")).await?;
-    // migrator.run(&db_pool).await
-    DB_MIGRATOR.run(&db_pool).await
+    let result = DB_MIGRATOR.run(&db_pool).await?;
+    tracing::debug!(
+        "{}",
+        "Database successfully configured and sample data loadedd!".green()
+    );
+    Ok(result)
 }
