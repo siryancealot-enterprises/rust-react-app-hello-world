@@ -25,8 +25,13 @@ pub fn get_client() -> Result<Client, Error> {
 
 /// Search for player(s) that match the term.  
 pub async fn player_search(search_client: &Client, term: &str) -> Vec<Player> {
+    player_search_with_idx(search_client, term, PLAYER_SEARCH_INDEX).await
+}
+
+/// Search for player(s) that match the term against a specific index (i.e not the default index).  
+async fn player_search_with_idx(search_client: &Client, term: &str, index: &str) -> Vec<Player> {
     let search_results = search_client
-        .index(PLAYER_SEARCH_INDEX)
+        .index(index)
         .search()
         .with_query(term)
         .execute::<Player>()
@@ -64,20 +69,19 @@ mod tests {
 
     #[sqlx::test(migrator = "DB_MIGRATOR")]
     async fn endpoints_player_search(pool: PgPool) {
+        let test_index_name: &str = "endpoints_player_search";
         // Initialize and seed the search index (using our test's name for the index)
         let search_client: Client =
-            dev_and_test_utils::search_service_init_and_seed(pool, "endpoints_player_search")
+            dev_and_test_utils::search_service_init_and_seed(pool, test_index_name)
                 .await
                 .unwrap();
 
-        let players: Vec<Player> = player_search(&search_client, "kobe").await;
+        let players: Vec<Player> =
+            player_search_with_idx(&search_client, "kobe", test_index_name).await;
         assert_eq!(players.len(), 1);
         assert_eq!(players.get(0).unwrap().username, "kobe");
 
         // delete the test-specific index (for the next run)
-        search_client
-            .delete_index("endpoints_player_search")
-            .await
-            .unwrap();
+        search_client.delete_index(test_index_name).await.unwrap();
     }
 }

@@ -74,7 +74,7 @@ pub async fn search_service_init_and_seed(
         .unwrap()
         .hits;
 
-    assert!(search_results.len() > 0);
+    assert!(!search_results.is_empty());
     println!("{:?}", search_results);
 
     Ok(client)
