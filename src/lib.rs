@@ -40,6 +40,7 @@
 //! With those requirements fulfilled, see the [Sync the Repo and Build the App](https://docs.google.com/document/d/1XNp3Rvjv013czinhsvlJ8TVzIqlS23XuRvU68ydVp28/edit#heading=h.xjl3tbax05i7) section on how to build this project and run the app.
 
 pub mod api;
+pub mod environment_utils;
 pub mod services;
 
 // Re-export our API modules for deverloper convenience and documentation

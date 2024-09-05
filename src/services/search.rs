@@ -24,7 +24,7 @@ pub fn get_client() -> Result<Client, Error> {
 }
 
 /// Search for player(s) that match the term.  
-pub async fn player_search(search_client: Client, term: &str) -> Vec<Player> {
+pub async fn player_search(search_client: &Client, term: &str) -> Vec<Player> {
     let search_results = search_client
         .index(PLAYER_SEARCH_INDEX)
         .search()
@@ -42,10 +42,42 @@ pub async fn player_search(search_client: Client, term: &str) -> Vec<Player> {
     players
 }
 
-// TODO SWY:
-// 1) Move this into test only code
-// 2) Replace this with a truly mocked out impl, as this is creating a normal meilisearch Client... that has to
-//    have some cost, right?
-pub fn get_test_search_client() -> Client {
-    get_client().unwrap()
+#[cfg(test)]
+pub(crate) mod search_test_utils {
+    use meilisearch_sdk::client::Client;
+
+    use super::get_client;
+
+    // TODO SWY: Replace this with a truly mocked out impl, or setup a client with a Test specific index
+    pub fn get_test_search_client() -> Client {
+        get_client().unwrap()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use crate::{environment_utils::dev_and_test_utils, resources::Player, DB_MIGRATOR};
+    use meilisearch_sdk::client::Client;
+    use sqlx::PgPool;
+
+    #[sqlx::test(migrator = "DB_MIGRATOR")]
+    async fn endpoints_player_search(pool: PgPool) {
+        // Initialize and seed the search index (using our test's name for the index)
+        let search_client: Client =
+            dev_and_test_utils::search_service_init_and_seed(pool, "endpoints_player_search")
+                .await
+                .unwrap();
+
+        let players: Vec<Player> = player_search(&search_client, "kobe").await;
+        assert_eq!(players.len(), 1);
+        assert_eq!(players.get(0).unwrap().username, "kobe");
+
+        // delete the test-specific index (for the next run)
+        search_client
+            .delete_index("endpoints_player_search")
+            .await
+            .unwrap();
+    }
 }

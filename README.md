@@ -9,13 +9,13 @@ We do not use another server for serving the React app (such as Node.js), rather
 ### Key technologies and libraries used:
 * Rust's [Axum](https://docs.rs/axum/latest/axum/) web application server framework
 * Postgres DB with Rust's [sqlx](https://docs.rs/sqlx/latest/sqlx/) toolkit for client interaction and other DB utilities
-* Meilisearch's with its [Rust SDK](https://github.com/meilisearch/meilisearch-rust)
+* Meilisearch with its [Rust SDK](https://github.com/meilisearch/meilisearch-rust)
 * Docker [Desktop](https://www.docker.com/products/docker-desktop/) and [Compose](https://docs.docker.com/compose/)
 
 ### Some best practices implemented:
 * Added Rust unit and integration tests for most Rust code
-* A basic GitHub workflow defined to start our core services, run tests, run Rust's formatter (rustfmt), and run Rust's linter (Clippy)
-* The most strict linting and formatting enabled for Rust and TypeScript code configured in VSCode and GitHub Action workflow
+* A basic GitHub workflow defined to start our core services, run tests, run Rust's formatter (rustfmt), and run Rust's linter (clippy)
+* Enforces the most strict linting and code formatting for Rust and TypeScript code configured in VSCode and GitHub Action workflow
 * Basic logging and tracing enabled
 * Proper environment variable support (staring with .env file at project Root)
 * Automated DB schema creation and upgrade script execution
@@ -31,9 +31,9 @@ The instructions below assume you have the following installed locally:
 2. Rust (v1.80+) 
 3. Node (v20.16.0+)
 5. Docker Desktop (v4.32+)
-6. (optional, but highly recommended) VSCode (v1.90+ with "rust-analyzer" and "ESLint" extensions installed)
+6. VSCode (v1.90+ with "rust-analyzer" and "ESLint" extensions installed). This is optional, but highly recommended. 
 
-Note: Postgres and meilisearch will automationcally be installed and initialized by our automated local build process using Docker Compose. 
+Note: Postgres and meilisearch will automationcally be installed and initialized by our automated local build process using Docker Compose and a local environment initialization script. 
 
 See the [Dev Environment Setup](https://docs.google.com/document/d/1XNp3Rvjv013czinhsvlJ8TVzIqlS23XuRvU68ydVp28/edit#heading=h.nmiyh3e307cw) section for instructions on how to install any of the above.
 

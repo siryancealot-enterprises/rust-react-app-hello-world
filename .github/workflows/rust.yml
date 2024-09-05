@@ -32,6 +32,14 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+          
+      meilisearch:
+        image: getmeili/meilisearch:v1.10.1
+        ports:
+          - 7700:7700
+        env:
+          MEILI_MASTER_KEY: master-key
+          MEILI_NO_ANALYTICS: true
 
     steps:
     - name: Check out repository code
