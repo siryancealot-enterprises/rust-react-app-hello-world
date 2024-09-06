@@ -96,6 +96,11 @@ pub async fn add_player(
         }
     };
 
+    // Add the newly added player to our search service and index.
+    // In the future, this manual approach may be subsituted for a more automatic index-ing strategy such as something
+    // integrated in or with Postgres directly (such as log or notification)
+    search::index_player(&app_state.search_client, &new_player).await;
+
     (StatusCode::CREATED, Json(new_player)).into_response()
 }
 

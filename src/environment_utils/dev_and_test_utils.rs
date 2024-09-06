@@ -12,7 +12,6 @@
 //!
 //! A production-ized version of this will be needed that only focuses on creating db schema and index creation, along with
 //! whatever legitimate/real data seeding is needed.
-use std::time;
 
 use axum::response::IntoResponse;
 use colored::Colorize;
@@ -22,12 +21,37 @@ use sqlx::{migrate::MigrateError, PgPool, Postgres};
 use crate::{
     endpoints,
     resources::Player,
-    services::{self, app_server::AppState},
+    services::{self, app_server::AppState, search},
     DB_MIGRATOR,
 };
 
 // Name that should be in our seed data, which we can test query against...
 const PLAYER_NAME_TO_FIND: &str = "kobe";
+/// Creates the search index
+pub async fn search_service_init(index_name: &str) -> Result<Client, Error> {
+    // Create a serach client
+    let client = services::search::get_client()?;
+
+    // Create the index
+    client.index(index_name);
+
+    // If we want to enable filtering, we must add the attributes to the filterableAttributes index setting.
+    // You only need to perform this operation once.
+    // Note that Meilisearch will rebuild your index whenever you update filterableAttributes. Depending on the size of your
+    // dataset, this might take time. You can track the process using the returned Tasks.
+    // TODO SWY: Make thse attributes a function parameter
+    let filterable_attributes = ["id", "name"];
+    let task = client
+        .index(index_name)
+        .set_filterable_attributes(&filterable_attributes)
+        .await
+        .expect("Failed creatinng the index filter attribute");
+
+    // Wait for indexing to finish...
+    search::wait_for_search_operation_to_complete(&client, task).await?;
+
+    Ok(client)
+}
 
 /// Creates the search indexes and seeds it with some sample data from the DB.
 /// Note: when using search for real, we'll rely on a real system for notifications of data insert or change
@@ -37,33 +61,18 @@ pub async fn search_service_init_and_seed(
     index_name: &str,
 ) -> Result<Client, Error> {
     // Create a serach client
-    let client = services::search::get_client()?;
-
-    // The index where our Player resource data is stored.
-    let players_idx = client.index(index_name);
-
-    // If we want to enable filtering, we must add the attributes to the filterableAttributes index setting.
-    // You only need to perform this operation once.
-    // Note that Meilisearch will rebuild your index whenever you update filterableAttributes. Depending on the size of your
-    // dataset, this might take time. You can track the process using the returned Tasks.
-    let filterable_attributes = ["id", "name"];
-    client
-        .index(index_name)
-        .set_filterable_attributes(&filterable_attributes)
-        .await
-        .expect("Failed creatinng the index filter attribute");
+    let client = search_service_init(index_name).await.unwrap();
 
     // Insert the Player data into the index
-    let insert_task: TaskInfo = seed_player_index(client.clone(), &players_idx, db_pool).await;
+    let insert_task: TaskInfo = seed_player_index(
+        client.clone(),
+        &client.get_index(index_name).await.unwrap(),
+        db_pool,
+    )
+    .await;
 
     // Wait for indexing to finish...
-    client
-        .wait_for_task(
-            insert_task,
-            Some(time::Duration::from_millis(250)),
-            Some(time::Duration::from_secs(30)),
-        )
-        .await?;
+    search::wait_for_search_operation_to_complete(&client, insert_task).await?;
 
     // Run a test serach to ensure data was loaded and indexed (and hence available) ...
     let search_results = client
@@ -78,7 +87,7 @@ pub async fn search_service_init_and_seed(
     assert!(!search_results.is_empty());
     tracing::debug!(
         "{}",
-        "Search service successfully configured and sample data loadedd!".green()
+        "Search service successfully configured and sample data loaded!".green()
     );
 
     Ok(client)
@@ -109,7 +118,7 @@ pub async fn database_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(),
     let result = DB_MIGRATOR.run(&db_pool).await?;
     tracing::debug!(
         "{}",
-        "Database successfully configured and sample data loadedd!".green()
+        "Database successfully configured and sample data loaded!".green()
     );
     Ok(result)
 }
