@@ -115,10 +115,10 @@ async fn seed_player_index(
 
 /// Runs the sqlx::migrate::Migrator, which creates the database's initial schema and seeds with some sample data
 pub async fn database_init_and_seed(db_pool: sqlx::Pool<Postgres>) -> Result<(), MigrateError> {
-    let result = DB_MIGRATOR.run(&db_pool).await?;
+    DB_MIGRATOR.run(&db_pool).await?;
     tracing::debug!(
         "{}",
         "Database successfully configured and sample data loaded!".green()
     );
-    Ok(result)
+    Ok(())
 }
