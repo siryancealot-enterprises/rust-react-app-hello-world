@@ -1,8 +1,12 @@
 //! Provides utilites to interact with our Search service, at the moment: [meilisearch](https://www.meilisearch.com/).
 //!
-//! NOTE: At the moment we're not adding to our index automatically, it contains only what's been seeded at repo
-//! initialization time. See the function in init_dev_repo.rs that does this. See [this post](https://www.meilisearch.com/docs/guides/database/meilisync_postgresql)
+//! NOTE: At the moment we're adding to our Player index at repo initialization time, see [`environment_utils::dev_and_test_utils`](`environment_utils::dev_and_test_utils`), and
+//! at player creation time, see: [`api::endpoints::add_player`](`create::api::endpoints::add_player`). Eventually we may want to have an automated system to is based on our
+//! DB replication/notification type approach.  See [this post](https://www.meilisearch.com/docs/guides/database/meilisync_postgresql)
 //! about using meilisearch to index data in Postgres.
+//!
+//! TODO SWY: Tests from other modules currently use the same index as the normal running application locally, this needs to be separated
+//! via some test specific .env value for the index name for tests, creating a search service mock, or some other approach.
 use std::time;
 
 use colored::Colorize;
@@ -32,6 +36,7 @@ pub async fn player_search(search_client: &Client, term: &str) -> Vec<Player> {
 }
 
 /// Search for player(s) that match the term against a specific index (i.e not the default index).  
+/// /// Note: this is broken out from the search function above for testing purposes.
 async fn player_search_with_idx(search_client: &Client, term: &str, index: &str) -> Vec<Player> {
     let search_results = search_client
         .index(index)
@@ -104,8 +109,6 @@ pub(crate) mod search_test_utils {
 #[cfg(test)]
 mod tests {
 
-    use std::time::Instant;
-
     use super::*;
     use crate::{environment_utils::dev_and_test_utils, resources::Player, DB_MIGRATOR};
     use dotenv::dotenv;
@@ -117,7 +120,11 @@ mod tests {
     /// generate a name that combines the base of the index name plus the current time in millis.
     fn get_unique_test_index_name(idx_name: &str) -> String {
         let mut test_index_name: String = idx_name.to_owned();
-        test_index_name.push_str(&Instant::now().elapsed().as_millis().to_string());
+        let milliseconds_timestamp: u128 = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_millis();
+        test_index_name.push_str(u128::to_string(&milliseconds_timestamp).as_str());
         test_index_name
     }
 
@@ -126,14 +133,14 @@ mod tests {
         let test_index_name: String = get_unique_test_index_name("search_player_search");
         // Initialize and seed the search index (using our test's name for the index)
         let search_client: Client =
-            dev_and_test_utils::search_service_init_and_seed(pool, &test_index_name)
+            dev_and_test_utils::search_service_init_and_seed_with_idx(pool, &test_index_name)
                 .await
                 .unwrap();
 
         let players: Vec<Player> =
             player_search_with_idx(&search_client, "kobe", &test_index_name).await;
         assert_eq!(players.len(), 1);
-        assert_eq!(players.get(0).unwrap().username, "kobe");
+        assert_eq!(players.first().unwrap().username, "kobe");
 
         // delete the test-specific index
         search_client.delete_index(&test_index_name).await.unwrap();
@@ -173,7 +180,7 @@ mod tests {
         let players: Vec<Player> =
             player_search_with_idx(&search_client, username, &test_index_name).await;
         assert_eq!(players.len(), 1);
-        assert_eq!(players.get(0).unwrap().username, username);
+        assert_eq!(players.first().unwrap().username, username);
 
         // delete the test-specific index
         search_client.delete_index(&test_index_name).await.unwrap();

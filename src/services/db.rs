@@ -23,10 +23,12 @@ pub async fn init_db_conn_pool() -> Result<Pool<Postgres>, sqlx::Error> {
         .connect(get_db_connect_string().as_str())
         .await?;
 
-    // sqlx::query_as("SELECT $1")
-    //     .bind(150_i64)
-    //     .fetch_one(&pool)
-    //     .await?;
+    let row: (i64,) = sqlx::query_as("SELECT $1")
+        .bind(150_i64)
+        .fetch_one(&pool)
+        .await?;
+
+    assert!(row.0 > 0);
 
     tracing::debug!(
         "{}",

@@ -1,10 +1,7 @@
 //! A utility for initalizing repos on developer or test environments.
 use colored::Colorize;
 use dotenv::dotenv;
-use rust_react_app_hello_world::{
-    environment_utils::dev_and_test_utils,
-    services::{self, search},
-};
+use rust_react_app_hello_world::{environment_utils::dev_and_test_utils, services};
 use sqlx::Postgres;
 
 #[tokio::main]
@@ -29,7 +26,7 @@ async fn main() {
             panic!("Fatal problem initializng the database: {error}");
         });
 
-    dev_and_test_utils::search_service_init_and_seed(db_pool, search::PLAYER_SEARCH_INDEX)
+    dev_and_test_utils::search_service_init_and_seed(db_pool.clone())
         .await
         .unwrap_or_else(|error| {
             panic!("Fatal problem initializng the search service: {error}");

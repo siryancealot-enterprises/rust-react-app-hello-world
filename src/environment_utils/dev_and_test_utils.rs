@@ -27,6 +27,7 @@ use crate::{
 
 // Name that should be in our seed data, which we can test query against...
 const PLAYER_NAME_TO_FIND: &str = "kobe";
+
 /// Creates the search index
 pub async fn search_service_init(index_name: &str) -> Result<Client, Error> {
     // Create a serach client
@@ -56,7 +57,12 @@ pub async fn search_service_init(index_name: &str) -> Result<Client, Error> {
 /// Creates the search indexes and seeds it with some sample data from the DB.
 /// Note: when using search for real, we'll rely on a real system for notifications of data insert or change
 /// from whatever the source system is (DB, file service, etc.)
-pub async fn search_service_init_and_seed(
+pub async fn search_service_init_and_seed(db_pool: PgPool) -> Result<Client, Error> {
+    search_service_init_and_seed_with_idx(db_pool, search::PLAYER_SEARCH_INDEX).await
+}
+
+/// Creates the search indexes and seeds it with some sample data from the DB using the specific index name
+pub async fn search_service_init_and_seed_with_idx(
     db_pool: PgPool,
     index_name: &str,
 ) -> Result<Client, Error> {
