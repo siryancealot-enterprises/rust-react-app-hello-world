@@ -34,19 +34,7 @@ pub async fn search_service_init(index_name: &str) -> Result<Client, Error> {
     let client = services::search::get_client()?;
 
     // Create the index
-    client.index(index_name);
-
-    // If we want to enable filtering, we must add the attributes to the filterableAttributes index setting.
-    // You only need to perform this operation once.
-    // Note that Meilisearch will rebuild your index whenever you update filterableAttributes. Depending on the size of your
-    // dataset, this might take time. You can track the process using the returned Tasks.
-    // TODO SWY: Make thse attributes a function parameter
-    let filterable_attributes = ["id", "name"];
-    let task = client
-        .index(index_name)
-        .set_filterable_attributes(&filterable_attributes)
-        .await
-        .expect("Failed creatinng the index filter attribute");
+    let task = client.create_index(index_name, None).await.unwrap();
 
     // Wait for indexing to finish...
     search::wait_for_search_operation_to_complete(&client, task).await?;

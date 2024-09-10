@@ -12,7 +12,7 @@ const NUM_SEED_PLAYER_ROWS: usize = 6;
 
 /// Basic validaiton of our endpoint for getting a list of players
 #[sqlx::test(migrator = "rust_react_app_hello_world::DB_MIGRATOR")]
-fn api_get_players(pool: sqlx::PgPool) {
+async fn api_get_players(pool: sqlx::PgPool) {
     let server = test_utils::get_test_server_with_app(pool);
 
     let response = server.get(endpoints::PLAYERS_API).await;
@@ -24,7 +24,7 @@ fn api_get_players(pool: sqlx::PgPool) {
 
 /// Basic validaiton of our endpoint for getting a player by id
 #[sqlx::test(migrator = "rust_react_app_hello_world::DB_MIGRATOR")]
-fn api_get_player(pool: sqlx::PgPool) {
+async fn api_get_player(pool: sqlx::PgPool) {
     let server = test_utils::get_test_server_with_app(pool);
 
     // Get the list of all players and select one at random...
@@ -47,7 +47,7 @@ fn api_get_player(pool: sqlx::PgPool) {
 
 /// Basic validaiton of our endpoint for adding a new players
 #[sqlx::test(migrator = "rust_react_app_hello_world::DB_MIGRATOR")]
-fn api_add_player(pool: sqlx::PgPool) {
+async fn api_add_player(pool: sqlx::PgPool) {
     let server = test_utils::get_test_server_with_app(pool);
 
     let player_to_create = Player {

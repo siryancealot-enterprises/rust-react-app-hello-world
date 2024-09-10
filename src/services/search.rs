@@ -100,8 +100,8 @@ pub(crate) mod search_test_utils {
 
     use super::get_client;
 
-    // TODO SWY: Replace this with a truly mocked out impl, or setup a client with a Test specific index
     pub fn get_test_search_client() -> Client {
+        // TODO SWY: Replace this with a truly mocked out impl, or setup a client with a Test specific index
         get_client().unwrap()
     }
 }
