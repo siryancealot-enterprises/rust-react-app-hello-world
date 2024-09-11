@@ -45,10 +45,7 @@ jobs:
     - name: Check out repository code
       uses: actions/checkout@v4
     - name: Create and seed the database
-      run: |
-        cargo --config .cargo/test-config.toml install --version=0.8.0 sqlx-cli --no-default-features --features postgres
-        sqlx database create
-        sqlx migrate run
+      run: cargo --config .cargo/test-config.toml run --bin init_dev_repo 
     - name: Build
       run: cargo build --verbose
     - name: Run tests
