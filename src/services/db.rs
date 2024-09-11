@@ -38,12 +38,10 @@ pub async fn init_db_conn_pool() -> Result<Pool<Postgres>, sqlx::Error> {
     Ok(pool)
 }
 
-// Return the DB connect string from the .env file, priting out the string with the DB password redacted.
+// Return the DB connect string from the .env file, priting out the string
 fn get_db_connect_string() -> String {
-    let password: String = configs::get_env_var_or_panic("DATABASE_PASSWORD");
-    let connect_string: String = configs::get_env_var_or_panic("DATABASE_URL");
-    let redacted_connect_string: String = connect_string.replace(&password, "<password_redacted>");
-    tracing::debug!("DB Connect str: {0}", redacted_connect_string);
+    let db_connect_string: String = configs::get_env_var_or_panic("DATABASE_URL");
+    tracing::debug!("DB Connect str: {0}", db_connect_string);
 
-    connect_string
+    db_connect_string
 }

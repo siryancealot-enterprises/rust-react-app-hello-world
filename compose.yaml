@@ -5,7 +5,7 @@ services:
     image: postgres
     restart: always
     env_file:
-      - .env
+      - .cargo/config.toml
     environment:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
@@ -22,7 +22,7 @@ services:
   meilisearch:
       image: 'getmeili/meilisearch:v1.10.1'
       env_file:
-        - .env
+        - .cargo/config.toml
       environment:
           MEILI_MASTER_KEY: '${SEARCH_MASTER_KEY}'
       ports:

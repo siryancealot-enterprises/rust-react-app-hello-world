@@ -143,7 +143,7 @@ pub async fn deserialize_api_resource<T: serde::de::DeserializeOwned>(
 mod tests {
 
     use super::*;
-    use crate::{services::search::search_test_utils, DB_MIGRATOR};
+    use crate::DB_MIGRATOR;
     use pretty_assertions::assert_eq;
     use sqlx::PgPool;
 
@@ -155,7 +155,7 @@ mod tests {
     fn build_app_state(db_pool: PgPool) -> axum::extract::State<AppState> {
         axum::extract::State(AppState {
             db_pool,
-            search_client: search_test_utils::get_test_search_client(),
+            search_client: search::get_client().unwrap(),
         })
     }
 

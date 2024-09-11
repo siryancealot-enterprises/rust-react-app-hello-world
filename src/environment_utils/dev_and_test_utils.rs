@@ -46,7 +46,7 @@ pub async fn search_service_init(index_name: &str) -> Result<Client, Error> {
 /// Note: when using search for real, we'll rely on a real system for notifications of data insert or change
 /// from whatever the source system is (DB, file service, etc.)
 pub async fn search_service_init_and_seed(db_pool: PgPool) -> Result<Client, Error> {
-    search_service_init_and_seed_with_idx(db_pool, search::PLAYER_SEARCH_INDEX).await
+    search_service_init_and_seed_with_idx(db_pool, search::get_player_index_name()).await
 }
 
 /// Creates the search indexes and seeds it with some sample data from the DB using the specific index name

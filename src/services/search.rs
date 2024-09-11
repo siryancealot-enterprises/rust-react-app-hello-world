@@ -5,8 +5,7 @@
 //! DB replication/notification type approach.  See [this post](https://www.meilisearch.com/docs/guides/database/meilisync_postgresql)
 //! about using meilisearch to index data in Postgres.
 //!
-//! TODO SWY: Tests from other modules currently use the same index as the normal running application locally, this needs to be separated
-//! via some test specific .env value for the index name for tests, creating a search service mock, or some other approach.
+use lazy_static::lazy_static;
 use std::time;
 
 use colored::Colorize;
@@ -16,7 +15,9 @@ use crate::resources::Player;
 
 use super::configs;
 
-pub const PLAYER_SEARCH_INDEX: &str = "players";
+lazy_static! {
+    static ref PLAYER_SEARCH_INDEX: String = configs::get_env_var_or_panic("PLAYER_SEARCH_INDEX");
+}
 
 /// Get a Client to our Search server.
 ///
@@ -30,9 +31,13 @@ pub fn get_client() -> Result<Client, Error> {
     )
 }
 
+pub fn get_player_index_name() -> &'static str {
+    PLAYER_SEARCH_INDEX.as_str()
+}
+
 /// Search for player(s) that match the term.  
 pub async fn player_search(search_client: &Client, term: &str) -> Vec<Player> {
-    player_search_with_idx(search_client, term, PLAYER_SEARCH_INDEX).await
+    player_search_with_idx(search_client, term, get_player_index_name()).await
 }
 
 /// Search for player(s) that match the term against a specific index (i.e not the default index).  
@@ -57,7 +62,7 @@ async fn player_search_with_idx(search_client: &Client, term: &str, index: &str)
 
 /// Upserts a Player to the default Players search index
 pub async fn index_player(search_client: &Client, player: &Player) {
-    let result = index_player_with_idx(search_client, player, PLAYER_SEARCH_INDEX).await;
+    let result = index_player_with_idx(search_client, player, get_player_index_name()).await;
     if result.is_err() {
         // For production, we'll need to send some alert or feed some operator system to monitor and bulk fix
         tracing::error!("{} {:?}", "Serch indexing error".red(), result.err());
@@ -92,18 +97,6 @@ pub async fn wait_for_search_operation_to_complete(
             Some(time::Duration::from_secs(30)),
         )
         .await
-}
-
-#[cfg(test)]
-pub(crate) mod search_test_utils {
-    use meilisearch_sdk::client::Client;
-
-    use super::get_client;
-
-    pub fn get_test_search_client() -> Client {
-        // TODO SWY: Replace this with a truly mocked out impl, or setup a client with a Test specific index
-        get_client().unwrap()
-    }
 }
 
 #[cfg(test)]

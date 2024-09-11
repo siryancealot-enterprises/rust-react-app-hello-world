@@ -89,7 +89,7 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Rout
             )
             .not_found_service(ServeFile::new(
                 // The url for the core SPA bootstraping file
-                configs::get_env_var_or_panic("SPA_BOOTSTRAP_URL"),
+                configs::get_env_var_or_panic("SPA_FALLBACK_URL"),
             )),
         )
         //

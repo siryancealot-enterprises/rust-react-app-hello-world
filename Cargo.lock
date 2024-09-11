@@ -2112,6 +2112,7 @@ dependencies = [
  "axum-test",
  "colored",
  "dotenv",
+ "lazy_static",
  "meilisearch-sdk",
  "pretty_assertions",
  "serde",

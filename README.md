@@ -17,7 +17,7 @@ We do not use another server for serving the React app (such as Node.js), rather
 * A basic GitHub workflow defined to start our core services, run tests, run Rust's formatter (rustfmt), and run Rust's linter (clippy)
 * Enforces the most strict linting and code formatting for Rust and TypeScript code configured in VSCode and GitHub Action workflow
 * Basic logging and tracing enabled
-* Proper environment variable support (staring with .env file at project Root)
+* Proper environment variable support (with .toml config files in the .cargo directory)
 * Automated DB schema creation and upgrade script execution
 * Using Docker Desktop and Docker Compose (using the compose.yaml in the project's base directory) to easily automate the initalization and setup of the database and search services the application relies on. You can still roll your own Postgres and meilisearch local setup, but why?
 * And many more (i.e. db connection pooling, etc. etc.)
