@@ -1,3 +1,8 @@
+# Config file specifically used for running tests, which when the command below is ran will override similar name=value pairs
+# from the base .cargo/config.toml file.
+#
+# Example: cargo --env-file .cargo/test-config.toml test
+
 [env]
 
 # Rust
@@ -5,4 +10,6 @@ RUST_BACKTRACE="1"
 
 # Search
 player_search_index = "players_TEST"   # Ensures our tests use a different index than our running application
+
+
 

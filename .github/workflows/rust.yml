@@ -22,11 +22,11 @@ jobs:
       postgres:
         image: postgres
         env:
-          # These need to align with values in our config.toml file
-          # TODO SWY: Find a way to make these substitution variables or just refernece the config.toml (or test-config.toml) file itself
+          # These need to be kept in sync with values in our .cargo/config.toml file
+          # TODO SWY: Find a way to make these substitution variables or just reference the config.toml (or test-config.toml) file itself
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: lakers
-          POSTGRES_DB: test_react_app_db
+          POSTGRES_DB: project_x_db
         options: >-     # Set health checks to wait until postgres has started
           --health-cmd pg_isready
           --health-interval 10s
