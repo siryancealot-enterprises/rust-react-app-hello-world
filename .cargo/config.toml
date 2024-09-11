@@ -9,6 +9,7 @@ DATBASE_NAME= "test_react_app_db"
 DATABASE_URL= "postgresql://postgres:lakers@localhost:5432/test_react_app_db"
 DATABASE_MAX_CONNECTIONS= "5"
 DATABASE_CONNECTION_ACQUIRE_TIMEOUT="3" # In seconds
+SQLX_OFFLINE="true"
 
 # app server
 APP_SERVER_URL= "127.0.0.1:3000"

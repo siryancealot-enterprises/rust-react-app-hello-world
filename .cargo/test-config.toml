@@ -3,9 +3,6 @@
 # Rust
 RUST_BACKTRACE="1"
 
-# Postgres
-SQLX_OFFLINE="true"
-
 # Search
 PLAYER_SEARCH_INDEX = "players_TEST"   # Ensures our tests use a different index than our running application
 
