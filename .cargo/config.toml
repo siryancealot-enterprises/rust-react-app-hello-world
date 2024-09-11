@@ -23,3 +23,8 @@ SEARCH_PORT="7700"
 SEARCH_SERVER_URL="http://localhost:7700"
 SEARCH_MASTER_KEY="master-key"
 PLAYER_SEARCH_INDEX = "players"
+
+# cargo aliases
+[alias] 
+test_wc = "--config .cargo/test-config.toml test" # run all tests with the test-specific config
+init_repo = "run --bin init_dev_repo" # init a new repo (i.e. creates and seeds DB schema, search idexes, etc.) 

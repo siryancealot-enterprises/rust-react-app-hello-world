@@ -22,6 +22,8 @@ jobs:
       postgres:
         image: postgres
         env:
+          # These need to align with values in our config.toml file
+          # TODO SWY: Find a way to make these substitution variables or just refernece the config.toml (or test-config.toml) file itself
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: lakers
           POSTGRES_DB: test_react_app_db
@@ -44,12 +46,12 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v4
-    - name: Create and seed the database
-      run: cargo --config .cargo/test-config.toml run --bin init_dev_repo 
+    - name: Create and seed the database and search service
+      run: cargo init_repo # Uses our custom cargo alias
     - name: Build
       run: cargo build --verbose
     - name: Run tests
-      run: cargo --config .cargo/test-config.toml test --verbose
+      run: cargo test_wc --verbose # uses our custom cargo alias
       
   # Use rustfmt to automatically format your Rust code according to the Rust style guidelines
   rustfmt:

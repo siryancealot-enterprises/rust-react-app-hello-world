@@ -12,7 +12,7 @@ async fn main() {
     // Init tracing/logging
     services::tracing::init_tracing();
 
-    // Init the DB
+    // Init the DB pool
     let db_pool: sqlx::Pool<Postgres> =
         services::db::init_db_conn_pool()
             .await
@@ -20,12 +20,14 @@ async fn main() {
                 panic!("Fatal problem initializng the database: {error}");
             });
 
+    // Init the db schema and seed with sample data
     dev_and_test_utils::database_init_and_seed(db_pool.clone())
         .await
         .unwrap_or_else(|error| {
             panic!("Fatal problem initializng the database: {error}");
         });
 
+    // Init the search service and seed the index with data
     dev_and_test_utils::search_service_init_and_seed(db_pool.clone())
         .await
         .unwrap_or_else(|error| {

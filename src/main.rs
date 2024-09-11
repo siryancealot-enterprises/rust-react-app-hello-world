@@ -24,7 +24,7 @@ async fn main() {
 
     // Init the Search server
     let search_client: Client = services::search::get_client().unwrap_or_else(|error| {
-        panic!("Fatal problem initializng the serach client: {error}");
+        panic!("Fatal problem initializing the serach client: {error}");
     });
 
     // Init the app server
