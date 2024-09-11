@@ -16,7 +16,7 @@ use crate::resources::Player;
 use super::configs;
 
 lazy_static! {
-    static ref PLAYER_SEARCH_INDEX: String = configs::get_env_var_or_panic("PLAYER_SEARCH_INDEX");
+    static ref PLAYER_SEARCH_INDEX: String = configs::get_env_var_or_panic("player_search_index");
 }
 
 /// Get a Client to our Search server.
@@ -26,8 +26,8 @@ lazy_static! {
 /// <https://www.meilisearch.com/docs/learn/security/differences_master_api_keys>
 pub fn get_client() -> Result<Client, Error> {
     Client::new(
-        configs::get_env_var_or_panic("SEARCH_SERVER_URL"),
-        Some(configs::get_env_var_or_panic("SEARCH_MASTER_KEY")),
+        configs::get_env_var_or_panic("search_server_url"),
+        Some(configs::get_env_var_or_panic("search_master_key")),
     )
 }
 

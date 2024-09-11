@@ -34,7 +34,7 @@ pub async fn init_app_server(
 ) -> Result<(), std::io::Error> {
     let app: axum::Router = init_router(db_pool, search_client);
 
-    let listener = TcpListener::bind(configs::get_env_var_or_panic("APP_SERVER_URL")).await?;
+    let listener = TcpListener::bind(configs::get_env_var_or_panic("app_server_url")).await?;
 
     tracing::debug!(
         "{} {}",
@@ -85,11 +85,11 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Rout
             "/",
             ServeDir::new(
                 // The SPA's build/distribution directory where all the compiled, static files reside
-                configs::get_env_var_or_panic("SPA_DIST_DIR"),
+                configs::get_env_var_or_panic("spa_dist_dir"),
             )
             .not_found_service(ServeFile::new(
                 // The url for the core SPA bootstraping file
-                configs::get_env_var_or_panic("SPA_FALLBACK_URL"),
+                configs::get_env_var_or_panic("spa_fallback_url"),
             )),
         )
         //
@@ -122,7 +122,7 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Rout
             // requests don't hang forever.
             TimeoutLayer::new(Duration::from_secs(u64::from(
                 configs::get_env_var_as_number_or_panic(
-                    "APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION",
+                    "app_server_graceful_shutdown_max_duration",
                 ),
             ))),
         ))

@@ -15,10 +15,10 @@ use crate::services::configs;
 pub async fn init_db_conn_pool() -> Result<Pool<Postgres>, sqlx::Error> {
     let pool: Pool<Postgres> = PgPoolOptions::new()
         .max_connections(configs::get_env_var_as_number_or_panic(
-            "DATABASE_MAX_CONNECTIONS",
+            "database_max_connections",
         ))
         .acquire_timeout(Duration::from_secs(u64::from(
-            configs::get_env_var_as_number_or_panic("DATABASE_CONNECTION_ACQUIRE_TIMEOUT"),
+            configs::get_env_var_as_number_or_panic("database_connection_aquire_timeout"),
         )))
         .connect(get_db_connect_string().as_str())
         .await?;

@@ -51,7 +51,7 @@ jobs:
     - name: Build
       run: cargo build --verbose
     - name: Run tests
-      run: cargo test_wc --verbose # uses our custom cargo alias
+      run: cargo test_with_config --verbose # uses our custom cargo alias
       
   # Use rustfmt to automatically format your Rust code according to the Rust style guidelines
   rustfmt:

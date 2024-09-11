@@ -7,13 +7,13 @@ services:
     env_file:
       - .cargo/config.toml
     environment:
-      - POSTGRES_USER=${DATABASE_USER}
-      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
-      - POSTGRES_DB=${DATBASE_NAME}
+      - POSTGRES_USER=${database_user}
+      - POSTGRES_PASSWORD=${database_password}
+      - POSTGRES_DB=${database_name}
     ports:
       - '5432:5432'
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${DATABASE_USER}"]
+      test: [ "CMD-SHELL", "pg_isready -d $${database_name} -U $${database_user}"]
       interval: 1s
       timeout: 5s
       retries: 10
@@ -24,10 +24,10 @@ services:
       env_file:
         - .cargo/config.toml
       environment:
-          MEILI_MASTER_KEY: '${SEARCH_MASTER_KEY}'
+          MEILI_MASTER_KEY: '${search_master_key}'
       ports:
-          - '${SEARCH_PORT}:${SEARCH_PORT}'
+          - '${search_port}:${search_port}'
       healthcheck:
-          test: set -o pipefail;curl -fsS http://${SEARCH_SERVER_URL}/health | grep -q '{"status":"available"}'
+          test: set -o pipefail;curl -fsS http://${search_server_url}/health | grep -q '{"status":"available"}'
           retries: 3
           timeout: 5s

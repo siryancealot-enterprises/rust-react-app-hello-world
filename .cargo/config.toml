@@ -1,29 +1,29 @@
 [env]
 
 # db
-DATABASE_USER="postgres"
-DATABASE_PASSWORD="lakers"
-DATABASE_HOST= "localhost:5432"
-DATBASE_NAME= "test_react_app_db"
+database_user="postgres"
+database_password="lakers"
+database_host= "localhost:5432"
+database_name= "test_react_app_db"
 # TODO SWY: Need to turn the below into using substitution vars like this: "postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATBASE_NAME}"
 DATABASE_URL= "postgresql://postgres:lakers@localhost:5432/test_react_app_db"
-DATABASE_MAX_CONNECTIONS= "5"
-DATABASE_CONNECTION_ACQUIRE_TIMEOUT="3" # In seconds
+database_max_connections= "5"
+database_connection_aquire_timeout="3" # In seconds
 SQLX_OFFLINE="true"
 
 # app server
-APP_SERVER_URL= "127.0.0.1:3000"
-APP_SERVER_GRACEFUL_SHUTDOWN_MAX_DURATION="10" # In seconds
+app_server_url= "127.0.0.1:3000"
+app_server_graceful_shutdown_max_duration="10" # In seconds
 
 # React / Typescript SPA
-SPA_DIST_DIR="my-react-ts-app/build"
-SPA_FALLBACK_URL="my-react-ts-app/build/index.html"
+spa_dist_dir="my-react-ts-app/build"
+spa_fallback_url="my-react-ts-app/build/index.html"
 
 # search
-SEARCH_PORT="7700"
-SEARCH_SERVER_URL="http://localhost:7700"
-SEARCH_MASTER_KEY="master-key"
-PLAYER_SEARCH_INDEX = "players"
+search_port="7700"
+search_server_url="http://localhost:7700"
+search_master_key="master-key"
+player_search_index = "players"
 
 # cargo aliases
 [alias] 

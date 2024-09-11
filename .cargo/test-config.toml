@@ -4,5 +4,5 @@
 RUST_BACKTRACE="1"
 
 # Search
-PLAYER_SEARCH_INDEX = "players_TEST"   # Ensures our tests use a different index than our running application
+player_search_index = "players_TEST"   # Ensures our tests use a different index than our running application
 
