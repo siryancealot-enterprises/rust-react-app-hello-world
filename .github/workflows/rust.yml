@@ -46,7 +46,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Create and seed the database
       run: |
-        cargo install --version=0.8.0 sqlx-cli --no-default-features --features postgres
+        cargo --config .cargo/test-config.toml install --version=0.8.0 sqlx-cli --no-default-features --features postgres
         sqlx database create
         sqlx migrate run
     - name: Build
