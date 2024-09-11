@@ -27,5 +27,10 @@ PLAYER_SEARCH_INDEX = "players"
 
 # cargo aliases
 [alias] 
-test_wc = "--config .cargo/test-config.toml test" # run all tests with the test-specific config
 init_repo = "run --bin init_dev_repo" # init a new repo (i.e. creates and seeds DB schema, search idexes, etc.) 
+
+test_with_config = "--config .cargo/test-config.toml test" # run all tests with the test-specific config
+
+docker_tear_down = "run --bin docker_utils -- tear_down" # Tears down the Docker services defined in composer.yaml
+docker_stop = "run --bin docker_utils -- stop" # Shuts down the Docker services defined in composer.yaml
+docker_up = "run --bin docker_utils -- up" # Starts or creates the Docker services defined in composer.yaml
