@@ -24,7 +24,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: lakers
-          POSTGRES_DB: postgres
+          POSTGRES_DB: test_react_app_db
         options: >-     # Set health checks to wait until postgres has started
           --health-cmd pg_isready
           --health-interval 10s
