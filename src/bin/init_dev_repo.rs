@@ -1,14 +1,10 @@
 //! A utility for initalizing repos on developer or test environments.
 use colored::Colorize;
-use dotenv::dotenv;
 use rust_react_app_hello_world::{environment_utils::dev_and_test_utils, services};
 use sqlx::Postgres;
 
 #[tokio::main]
 async fn main() {
-    // Load environment variables from .env (at project root... for now)
-    dotenv().ok();
-
     // Init tracing/logging
     services::tracing::init_tracing();
 

@@ -104,7 +104,6 @@ mod tests {
 
     use super::*;
     use crate::{environment_utils::dev_and_test_utils, resources::Player, DB_MIGRATOR};
-    use dotenv::dotenv;
     use meilisearch_sdk::client::Client;
     use sqlx::PgPool;
     use uuid::Uuid;
@@ -141,9 +140,6 @@ mod tests {
 
     #[tokio::test]
     async fn search_index_player() {
-        // For some reason we need to manually load .env file (though it seems intermittent, should investigate further)
-        dotenv().ok();
-
         let test_index_name = get_unique_test_index_name("search_index_player");
 
         // Initialize the search index (using our test's name for the index)

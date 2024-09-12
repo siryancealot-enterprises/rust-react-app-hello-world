@@ -15,7 +15,7 @@ export const APIConstants = Object.freeze({
 
 export const API_URLS = Object.freeze({
   // Should match what's defined in the Platform's API located in the platform api/methods.rs file 
-  // TODO: auto generate these from a platform build routine (generating a constants/api_urls.js file specifically for this)
+  // TODO SWY: auto generate these from a platform build routine (generating a constants/api_urls.js file specifically for this)
 
   PLAYER_API: '/api/players',
   PLAYER_SEARCH_API: '/api/players/search',

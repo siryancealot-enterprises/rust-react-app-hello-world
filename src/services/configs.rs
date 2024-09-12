@@ -30,19 +30,16 @@ pub fn get_env_var_or_panic(var_name: &str) -> String {
 mod tests {
 
     use super::*;
-    use dotenv::dotenv;
     use pretty_assertions::assert_eq;
 
     #[test]
     #[should_panic(expected = "Missing BLAH in .cargo/config.toml file.")]
     fn configs_validate_get_env_var_or_panic_panics() {
-        dotenv().ok();
         get_env_var_or_panic("BLAH");
     }
 
     #[test]
     fn configs_validate_get_env_var_or_panic() {
-        dotenv().ok();
         assert_eq!("postgres", get_env_var_or_panic("database_user"));
     }
 }

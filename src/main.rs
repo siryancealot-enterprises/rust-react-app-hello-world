@@ -1,4 +1,3 @@
-use dotenv::dotenv;
 use meilisearch_sdk::client::Client;
 use sqlx::Postgres;
 
@@ -6,9 +5,6 @@ use ::rust_react_app_hello_world::services;
 
 #[tokio::main]
 async fn main() {
-    // Load environment variables from .env (at project root... for now)
-    dotenv().ok();
-
     // Init tracing/logging
     services::tracing::init_tracing();
 
