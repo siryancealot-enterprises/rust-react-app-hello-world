@@ -18,5 +18,20 @@
     },
     "[typescriptreact]": {
         "editor.formatOnSave": true
-    }
+    },
+    // TODO SWY: Right now the "Debug" link above Rust test functions doesn't work, because the launch target it generates doesn't
+    // include a reference to our config files (neither .cargo/config.toml or the one we generate specifically for the debugger:
+    // debugger-config.env that our hand crafted launch targets in launch.json uses). If we want to remove the broken "Debug" 
+    // just uncomment the line below. Leaving in for now as a reminder to do further investigation later.
+    // "rust-analyzer.lens.debug.enable": false,
+
+    // The only known way too solve this is by adding env vars to the  "rust-analyzer.runnables.extraEnv" property in this
+    // settings.json, but that takes an enumeration of each env variable and won't take a reference to an actual config file. 
+    // Argh. So... make a build step that? copies each var in the config file into that property in setting.json. Ugh. For example...
+    // "rust-analyzer.runnables.extraEnv": {
+    //    "search_server_url": "http://localhost:7700",
+    //    ...
+    //  }
+
+    
 }
