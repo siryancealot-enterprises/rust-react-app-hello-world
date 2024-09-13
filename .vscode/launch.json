@@ -7,7 +7,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "rust_react_app_hello_world: Debug tests",
+            "name": "Debug: all tests",
             "cargo": {
                 "args": [
                     "test_with_config",
@@ -25,12 +25,36 @@
             "preLaunchTask": "rust: cargo copy_configs_for_debugger", 
             "cwd": "${workspaceFolder}"
         },
+        // Debug a single Rust unit test (currently doesn't work for integration tests)
+        // Simply highlight the name of the test you want to run in the IDE and then execute this launch target as 
+        // normal 
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug: selected unit test (highlight the test name)",
+            "cargo": {
+                "args": [
+                    "test_with_config",
+                    "--no-run",
+                    "--lib",
+                    "--package=rust_react_app_hello_world"
+                ],
+               "filter": {
+                    "name": "rust_react_app_hello_world",
+                    "kind": "lib"
+                }
+            },
+            "envFile": "${workspaceFolder}/target/debug/debugger-config.env",
+            "args": ["${selectedText}"],
+            "preLaunchTask": "rust: cargo copy_configs_for_debugger", 
+            "cwd": "${workspaceFolder}"
+        },
         // Debug the app server
         {
             // If this breaks, read comments in copy_configs_for_debugger.rs as a starting place.
             "type": "lldb",
             "request": "launch",
-            "name": "rust_react_app_hello_world: Debug app",
+            "name": "Debug: app server",
             "cargo": {
                 "args": [
                     "build",
