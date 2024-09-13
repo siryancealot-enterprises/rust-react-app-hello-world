@@ -1,0 +1,51 @@
+{
+    // Use IntelliSense to learn about possible attributes, hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        // Debug Rust tests (unit and integration) 
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "rust_react_app_hello_world: Debug tests",
+            "cargo": {
+                "args": [
+                    "test_with_config",
+                    "--no-run",
+                    "--lib",
+                    "--package=rust_react_app_hello_world"
+                ],
+                "filter": {
+                    "name": "rust_react_app_hello_world",
+                    "kind": "lib"
+                }
+            },
+            "envFile": "${workspaceFolder}/target/debug/debugger-config.env",
+            "args": [],
+            "preLaunchTask": "rust: cargo copy_configs_for_debugger", 
+            "cwd": "${workspaceFolder}"
+        },
+        // Debug the app server
+        {
+            // If this breaks, read comments in copy_configs_for_debugger.rs as a starting place.
+            "type": "lldb",
+            "request": "launch",
+            "name": "rust_react_app_hello_world: Debug app",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rust_react_app_hello_world",
+                    "--package=rust_react_app_hello_world"
+                ],
+                "filter": {
+                    "name": "rust_react_app_hello_world",
+                    "kind": "bin"
+                }
+            },
+            "envFile": "${workspaceFolder}/target/debug/debugger-config.env",
+            "args": [],
+            "preLaunchTask": "rust: cargo copy_configs_for_debugger", 
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

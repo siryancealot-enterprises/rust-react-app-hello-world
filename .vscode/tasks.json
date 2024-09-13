@@ -1,0 +1,40 @@
+{
+	// Use IntelliSense to learn about possible attributes, hover to view descriptions of existing attributes.
+	"version": "2.0.0",
+	"tasks": [
+		// Run Rust tests (unit and integration) 
+		{
+			"type": "cargo",
+			"command": "test_with_config",
+			"problemMatcher": [
+				"$rustc"
+			],
+			"group": "test",
+			"label": "rust: cargo test_with_config"
+		},
+		// Runs the app server
+		{
+			"type": "cargo",
+			"command": "run",
+			"problemMatcher": [
+				"$rustc"
+			],
+			"label": "rust: cargo run"
+		},
+		// Read comments in copy_configs_for_debugger.rs to understand 
+		{
+			"type": "cargo",
+			"command": "copy_configs_for_debugger",
+			"problemMatcher": [
+				"$rustc"
+			],
+			"label": "rust: cargo copy_configs_for_debugger"
+		},
+		// Handy utility to see what varoius env vars resolve to: https://code.visualstudio.com/docs/editor/variables-reference'
+		{
+			"label": "echo",
+			"type": "shell",
+			"command": "echo ${workspaceFolderBasename}" 
+		}
+	]
+}

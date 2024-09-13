@@ -45,3 +45,5 @@ test_with_config = "--config .cargo/test-config.toml test" # run all tests with 
 docker_tear_down = "run --bin docker_utils -- tear_down" # Tears down the Docker services defined in composer.yaml
 docker_stop = "run --bin docker_utils -- stop" # Shuts down the Docker services defined in composer.yaml
 docker_up = "run --bin docker_utils -- up" # Starts or creates the Docker services defined in composer.yaml
+
+copy_configs_for_debugger = "run --bin copy_configs_for_debugger" # Copies our .cargo/config.toml to the target/debug directory in a format our debugger can use.

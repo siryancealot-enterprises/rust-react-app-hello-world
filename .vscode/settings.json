@@ -1,4 +1,5 @@
 {
+    // Use IntelliSense to learn about possible attributes, hover to view descriptions of existing attributes.
     "github.gitAuthentication": true,
     "rust-analyzer.check.command": "clippy",
     "editor.codeActionsOnSave": {
