@@ -20,6 +20,7 @@
 //! * Proper environment variable support (with .toml config files in the .cargo directory)
 //! * Automated DB schema creation and upgrade script execution
 //! * Using Docker Desktop and Docker Compose (using the compose.yaml in the project's base directory) to easily automate the initalization and setup of the database and search services the application relies on. You can still roll your own Postgres and meilisearch local setup, but why?
+//! * VSCode launch configurations for running and debugging
 //! * And many more (i.e. db connection pooling, etc. etc.)
 //!
 //! ## How to build

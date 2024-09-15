@@ -20,7 +20,7 @@
                     "kind": "lib"
                 }
             },
-            "envFile": "${workspaceFolder}/target/debug/debugger-config.env",
+            "envFile": "${workspaceFolder}/target/debug/debugger-test-config.env",
             "args": [],
             "preLaunchTask": "rust: cargo copy_configs_for_debugger", 
             "cwd": "${workspaceFolder}"
@@ -44,7 +44,7 @@
                     "kind": "lib"
                 }
             },
-            "envFile": "${workspaceFolder}/target/debug/debugger-config.env",
+            "envFile": "${workspaceFolder}/target/debug/debugger-test-config.env",
             "args": ["${selectedText}"],
             "preLaunchTask": "rust: cargo copy_configs_for_debugger", 
             "cwd": "${workspaceFolder}"

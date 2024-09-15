@@ -174,4 +174,13 @@ mod tests {
         // delete the test-specific index
         search_client.delete_index(&test_index_name).await.unwrap();
     }
+
+    // Validate our unit tests use an index that has _TEST suffixed (via an override in .cargo/config-test.toml) to
+    // ensure tests don't pollute your normal local index. If this fails, then one of the following may have happend:
+    // 1. The config override system is broken
+    // 2. You're using a testing execution method that doesn't pass in our testing configs (in .cargo/config-test.toml))
+    #[tokio::test]
+    async fn search_validate_test_index() {
+        assert!(get_player_index_name().ends_with("_TEST"));
+    }
 }
