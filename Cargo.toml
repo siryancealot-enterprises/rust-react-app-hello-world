@@ -1,5 +1,5 @@
 [package]
-name = "rust_react_app_hello_world"
+name = "rust_react_app_hello_world" # Any change to the name must be mirrored in launch.json
 version = "0.1.0"
 edition = "2021"
 default-run = "rust_react_app_hello_world"

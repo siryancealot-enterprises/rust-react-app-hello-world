@@ -14,9 +14,8 @@ use config::Config;
 /// it to our target/debug directory. It does this for a test-specific override version as well.  We rename both .env because
 /// at this point that's basically what it is.
 ///
-/// TODO SWY: This whole thing needs to be removed. As its brittle, hopefully the bug I filed resolves it, and plus its
-/// inherently flawed as we lose any layered config file behavior: if we add a dev-config.toml we won't be able to use it and
-/// merge it with the base config.toml.
+/// TODO SWY: This whole thing needs to be removed. Its brittle and inherently flawed (we need to manually layer specific config files),
+/// hopefully the bug listed above is resolved and this can be removed.
 use std::fs;
 
 fn main() {
@@ -24,7 +23,7 @@ fn main() {
     let mut config_toml_data =
         fs::read_to_string(".cargo/config.toml").expect("Unable to read file");
 
-    config_toml_data.insert_str(0, "### THIS IS A COPIED FILE FROM .cargo/config.toml\n\n### SEE copy_config_for_debugger.rs FOR WHY AND HOW\n\n\n\n");
+    config_toml_data.insert_str(0, "### THIS IS A COPIED FILE FROM .cargo/config.toml\n\n### SEE copy_config_for_debugger.rs for why and how\n\n\n\n");
 
     let transformed_config_toml: String =
         config_toml_data.replace("[env]", "").replace("[alias]", "");
@@ -41,7 +40,7 @@ fn main() {
         .build()
         .unwrap();
 
-    let mut test_override_configs: String = "### THIS IS A GENERATED FILE FROM .cargo/config.toml AND .cargo/test-config.toml\n\n### SEE copy_config_for_debugger.rs FOR WHY AND HOW\n\n\n\n".to_string();
+    let mut test_override_configs: String = "### THIS IS A GENERATED FILE FROM .cargo/config.toml AND .cargo/test-config.toml\n\n### Used by test configurations in launch.json\n\n### SEE copy_config_for_debugger.rs for why and how\n\n\n\n".to_string();
 
     // Only need to grab the pairs from the [env] secion of this file
     for pair in settings.get_table("env").unwrap().iter() {

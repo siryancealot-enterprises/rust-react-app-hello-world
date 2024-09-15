@@ -12,13 +12,8 @@
                 "args": [
                     "test_with_config",
                     "--no-run",
-                    "--lib",
-                    "--package=rust_react_app_hello_world"
-                ],
-                "filter": {
-                    "name": "rust_react_app_hello_world",
-                    "kind": "lib"
-                }
+                    "--lib"
+                ]
             },
             "envFile": "${workspaceFolder}/target/debug/debugger-test-config.env",
             "args": [],
@@ -36,13 +31,8 @@
                 "args": [
                     "test_with_config",
                     "--no-run",
-                    "--lib",
-                    "--package=rust_react_app_hello_world"
-                ],
-               "filter": {
-                    "name": "rust_react_app_hello_world",
-                    "kind": "lib"
-                }
+                    "--lib"
+                ]
             },
             "envFile": "${workspaceFolder}/target/debug/debugger-test-config.env",
             "args": ["${selectedText}"],
@@ -58,11 +48,10 @@
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=rust_react_app_hello_world",
-                    "--package=rust_react_app_hello_world"
+                    "--bin=rust_react_app_hello_world" // Needs to match [package].name value in Cargo.toml
                 ],
                 "filter": {
-                    "name": "rust_react_app_hello_world",
+                    "name": "rust_react_app_hello_world", // Needs to match [package].name value in Cargo.toml
                     "kind": "bin"
                 }
             },
