@@ -45,18 +45,10 @@ fn main() {
 
     // Only need to grab the pairs from the [env] secion of this file
     for pair in settings.get_table("env").unwrap().iter() {
-        let mut key: String = pair.0.clone();
-        // These need to be upper case, and the Config crate currently seems to have a bug which lowercases everything!
-        // https://github.com/mehcode/config-rs/issues/531
-        // TODO SWY: Keep track of the above bug and remove when fixed.
-        if pair.0 == "database_url" || pair.0 == "sqlx_offline" {
-            key = pair.0.to_uppercase();
-        }
-
         test_override_configs.push_str(
             format!(
                 "{} = \"{}\"\n",
-                key,
+                pair.0,
                 pair.1.to_owned().into_string().unwrap()
             )
             .as_str(),
