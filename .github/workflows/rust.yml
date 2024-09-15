@@ -46,10 +46,10 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v4
-    - name: Create and seed the database and search service
-      run: cargo init_repo # Uses our custom cargo alias
     - name: Build
       run: cargo build --verbose
+    - name: Create and seed the database and search service
+      run: cargo init_repo # Uses our custom cargo alias
     - name: Run tests
       run: cargo test_with_config --verbose # uses our custom cargo alias
       
