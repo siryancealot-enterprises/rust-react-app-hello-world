@@ -49,9 +49,9 @@ jobs:
     - name: Build
       run: cargo build --verbose
     - name: Create and seed the database and search service
-      run: cargo init_repo # Uses our custom cargo alias
+      run: cargo init_repo --verbose # Uses our custom cargo alias
     - name: Run tests
-      run: cargo test_with_config --verbose # uses our custom cargo alias
+      run: cargo test_with_config --verbose # Uses our custom cargo alias for executing tests with the right test-specific config file
       
   # Use rustfmt to automatically format your Rust code according to the Rust style guidelines
   rustfmt:

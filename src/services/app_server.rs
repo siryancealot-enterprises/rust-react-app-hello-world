@@ -110,9 +110,8 @@ pub fn init_router(db_pool: sqlx::Pool<Postgres>, search_client: Client) -> Rout
         //
         // *** END: Add in all endpoints from our public APIs
         //
-        // Example of a routing to a random static html file (something outside the SPA)
-        .nest_service("/other-index", ServeFile::new("index2.html"))
-        // .layer(axum::middleware::from_fn(logging_middleware))
+        // Example of a routing an URL to a random static html file (something outside the SPA)
+        .nest_service("/other-page", ServeFile::new("sample_page.html"))
         .layer(RequestDecompressionLayer::new())
         .layer(compression_layer)
         .layer((
