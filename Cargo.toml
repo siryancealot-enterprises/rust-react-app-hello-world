@@ -19,6 +19,10 @@ meilisearch-sdk = "0.27.1"
 colored = "2.1.0"
 lazy_static = "1.5.0"
 config = "0.13.4"
+deno_ast = { version = "0.38.2", features = ["transpiling"] }
+deno_core = "0.283.0"
+reqwest = "0.12.4"
+
 
 [dev-dependencies]
 pretty_assertions = "1"

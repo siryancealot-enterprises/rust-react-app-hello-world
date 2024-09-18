@@ -43,6 +43,7 @@
 pub mod api;
 pub mod environment_utils;
 pub mod services;
+pub mod typescript;
 
 // Re-export our API modules for deverloper convenience and documentation
 pub use api::endpoints;
