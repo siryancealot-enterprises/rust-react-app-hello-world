@@ -51,7 +51,7 @@ With those requirements fulfilled, see the [Sync the Repo and Build the App](htt
 4. cargo docker_up
 5. cargo init_repo
 6. cd my-react-ts-app
-7, npm install
+7. npm install
 8. npm run build
 9. cd ..
 10. cargo run
