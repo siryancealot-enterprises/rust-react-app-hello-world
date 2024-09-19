@@ -40,3 +40,22 @@ See the [Dev Environment Setup](https://docs.google.com/document/d/1XNp3Rvjv013c
 
 ### Instructions
 With those requirements fulfilled, see the [Sync the Repo and Build the App](https://docs.google.com/document/d/1XNp3Rvjv013czinhsvlJ8TVzIqlS23XuRvU68ydVp28/edit#heading=h.xjl3tbax05i7) section on how to build this project and run the app.
+
+** Or QUICKSTART **
+
+[ In a terminal ]
+
+1. git clone https://github.com/siryancealot-enterprises/rust-react-app-hello-world.git
+2. cd rust-react-app-hello-world
+3. cargo build
+4. cargo docker_up
+5. cargo init_repo
+6. cd my-react-ts-app
+7, npm install
+8. npm run build
+9. cd ..
+10. cargo run
+
+[in your browser]
+
+10. http://127.0.0.1:3000
